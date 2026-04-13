@@ -1,4 +1,5 @@
 'use client'
+
 import Banner from "@/components/Banner";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,31 +14,38 @@ import { fetchUserRatings } from "@/lib/features/rating/ratingSlice";
 export default function PublicLayout({ children }) {
 
     const dispatch = useDispatch()
-    const {user} = useUser()
-    const {getToken} = useAuth()
+    const { user } = useUser()
+    const { getToken } = useAuth()
 
-    const {cartItems} = useSelector((state)=>state.cart)
+    const { cartItems } = useSelector((state) => state.cart)
 
-    useEffect(()=>{
+    // Fetch products on load
+    useEffect(() => {
         dispatch(fetchProducts({}))
-    },[])
+    }, [])
 
-    useEffect(()=>{
-        if(user){
-            dispatch(fetchCart({getToken}))
-            dispatch(fetchAddress({getToken}))
-            dispatch(fetchUserRatings({getToken}))
+    // 🔥 AUTO CREATE USER (IMPORTANT FIX)
+    useEffect(() => {
+        if (user) {
+            fetch("/api/user"); // creates user in DB if not exists
         }
-    },[user])
+    }, [user])
 
-    useEffect(()=>{
-        if(user){
-            dispatch(uploadCart({getToken}))
+    // Fetch user related data
+    useEffect(() => {
+        if (user) {
+            dispatch(fetchCart({ getToken }))
+            dispatch(fetchAddress({ getToken }))
+            dispatch(fetchUserRatings({ getToken }))
         }
-    },[cartItems])
+    }, [user])
 
-
-
+    // Sync cart
+    useEffect(() => {
+        if (user) {
+            dispatch(uploadCart({ getToken }))
+        }
+    }, [cartItems])
 
     return (
         <>
