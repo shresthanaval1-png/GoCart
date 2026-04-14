@@ -5,38 +5,63 @@ import { MoveLeftIcon } from "lucide-react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useSelector } from "react-redux"
 
- function ShopContent() {
+function ShopContent() {
 
-    // get query params ?search=abc
     const searchParams = useSearchParams()
     const search = searchParams.get('search')
-    const router = useRouter()
+    const sort = searchParams.get('sort')        // ✅ NEW
+    const discount = searchParams.get('discount') // ✅ NEW
 
+    const router = useRouter()
     const products = useSelector(state => state.product.list)
 
-    const filteredProducts = search
-        ? products.filter(product =>
+    // 🔥 START WITH ALL PRODUCTS
+    let filteredProducts = [...products]
+
+    // 🔍 SEARCH FILTER
+    if (search) {
+        filteredProducts = filteredProducts.filter(product =>
             product.name.toLowerCase().includes(search.toLowerCase())
         )
-        : products;
+    }
+
+    // ⭐ SORT BY POPULAR (rating count)
+    if (sort === 'popular') {
+        filteredProducts.sort((a, b) => b.rating.length - a.rating.length)
+    }
+
+    // 💸 DISCOUNT FILTER
+    if (discount === 'true') {
+        filteredProducts = filteredProducts.filter(p => p.mrp > p.price)
+    }
 
     return (
         <div className="min-h-[70vh] mx-6">
-            <div className=" max-w-7xl mx-auto">
-                <h1 onClick={() => router.push('/shop')} className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"> {search && <MoveLeftIcon size={20} />}  All <span className="text-slate-700 font-medium">Products</span></h1>
+            <div className="max-w-7xl mx-auto">
+
+                <h1
+                    onClick={() => router.push('/shop')}
+                    className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"
+                >
+                    {(search || sort || discount) && <MoveLeftIcon size={20} />}
+                    All <span className="text-slate-700 font-medium">Products</span>
+                </h1>
+
                 <div className="grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 mx-auto mb-32">
-                    {filteredProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+                    {filteredProducts.map((product) => (
+                        <ProductCard key={product.id} product={product} />
+                    ))}
                 </div>
+
             </div>
         </div>
     )
 }
 
-
 export default function Shop() {
-  return (
-    <Suspense fallback={<div>Loading shop...</div>}>
-      <ShopContent />
-    </Suspense>
-  );
+    return (
+        <Suspense fallback={<div>Loading shop...</div>}>
+            <ShopContent />
+        </Suspense>
+    );
 }
