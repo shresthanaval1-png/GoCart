@@ -8,7 +8,22 @@ import { toast } from "react-hot-toast"
 
 export default function StoreAddProduct() {
 
-    const categories = ['Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Health', 'Toys & Games', 'Sports & Outdoors', 'Books & Media', 'Food & Drink', 'Hobbies & Crafts', 'Others']
+    // ✅ UPDATED CATEGORIES (MATCH FRONTEND)
+    const categories = [
+        'headphones',
+        'speakers',
+        'watch',
+        'earbuds',
+        'mouse',
+        'decoration',
+        'toys',
+        'sports',
+        'electronics',
+        'books',
+        'fashion',
+        'beauty',
+        'others'
+    ]
 
     const [images, setImages] = useState({ 1: null, 2: null, 3: null, 4: null })
     const [productInfo, setProductInfo] = useState({
@@ -48,8 +63,6 @@ export default function StoreAddProduct() {
                         {
                             loading: "Analyzing image with AI...",
                             success: (res) => {
-                                console.log(res);
-                                
                                 const data = res.data
                                 if (data.name && data.description) {
                                     setProductInfo(prev => ({
@@ -108,7 +121,9 @@ export default function StoreAddProduct() {
 
     return (
         <form onSubmit={e => toast.promise(onSubmitHandler(e), { loading: "Adding Product..." })} className="text-slate-500 mb-28">
+
             <h1 className="text-2xl">Add New <span className="text-slate-800 font-medium">Products</span></h1>
+
             <p className="mt-7">Product Images</p>
 
             <div className="flex gap-3 mt-4">
@@ -144,25 +159,45 @@ export default function StoreAddProduct() {
 
             <div className="flex gap-5">
                 <label className="flex flex-col gap-2 ">
-                    Actual Price ($)
+                    Actual Price
                     <input type="number" name="mrp" onChange={onChangeHandler} value={productInfo.mrp} placeholder="0" className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded" required />
                 </label>
+
                 <label className="flex flex-col gap-2 ">
-                    Offer Price ($)
+                    Offer Price
                     <input type="number" name="price" onChange={onChangeHandler} value={productInfo.price} placeholder="0" className="w-full max-w-45 p-2 px-4 outline-none border border-slate-200 rounded" required />
                 </label>
             </div>
 
-            <select onChange={e => setProductInfo({ ...productInfo, category: e.target.value })} value={productInfo.category} className="w-full max-w-sm p-2 px-4 my-6 outline-none border border-slate-200 rounded" required>
+            {/* ✅ UPDATED CATEGORY DROPDOWN */}
+            <select
+                onChange={e => setProductInfo({ ...productInfo, category: e.target.value })}
+                value={productInfo.category}
+                className="w-full max-w-sm p-2 px-4 my-6 outline-none border border-slate-200 rounded"
+                required
+            >
                 <option value="">Select a category</option>
-                {categories.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                ))}
+
+                <option value="headphones">Headphones</option>
+                <option value="speakers">Speakers</option>
+                <option value="watch">Watch</option>
+                <option value="earbuds">Earbuds</option>
+                <option value="mouse">Mouse</option>
+                <option value="decoration">Decoration</option>
+                <option value="toys">Toys & Games</option>
+                <option value="sports">Sports & Outdoors</option>
+                <option value="electronics">Electronics</option>
+                <option value="books">Books</option>
+                <option value="fashion">Fashion</option>
+                <option value="beauty">Beauty</option>
+                <option value="others">Others</option>
+
             </select>
 
-            <br />
+            <button disabled={loading} className="bg-slate-800 text-white px-6 mt-7 py-2 hover:bg-slate-900 rounded transition">
+                Add Product
+            </button>
 
-            <button disabled={loading} className="bg-slate-800 text-white px-6 mt-7 py-2 hover:bg-slate-900 rounded transition">Add Product</button>
         </form>
     )
 }

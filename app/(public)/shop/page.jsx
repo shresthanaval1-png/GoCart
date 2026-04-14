@@ -9,28 +9,37 @@ function ShopContent() {
 
     const searchParams = useSearchParams()
     const search = searchParams.get('search')
-    const sort = searchParams.get('sort')        // ✅ NEW
-    const discount = searchParams.get('discount') // ✅ NEW
+    const sort = searchParams.get('sort')
+    const discount = searchParams.get('discount')
+    const category = searchParams.get('category') // ✅ FIX ADDED
 
     const router = useRouter()
     const products = useSelector(state => state.product.list)
 
-    // 🔥 START WITH ALL PRODUCTS
     let filteredProducts = [...products]
 
-    // 🔍 SEARCH FILTER
+    // 🔍 SEARCH
     if (search) {
         filteredProducts = filteredProducts.filter(product =>
             product.name.toLowerCase().includes(search.toLowerCase())
         )
     }
 
-    // ⭐ SORT BY POPULAR (rating count)
-    if (sort === 'popular') {
-        filteredProducts.sort((a, b) => b.rating.length - a.rating.length)
+    // ✅ CATEGORY FILTER (MOST IMPORTANT FIX)
+    if (category) {
+        filteredProducts = filteredProducts.filter(product =>
+            product.category?.toLowerCase() === category.toLowerCase()
+        )
     }
 
-    // 💸 DISCOUNT FILTER
+    // ⭐ SORT (SAFE)
+    if (sort === 'popular') {
+        filteredProducts.sort((a, b) =>
+            (b.rating?.length || 0) - (a.rating?.length || 0)
+        )
+    }
+
+    // 💸 DISCOUNT
     if (discount === 'true') {
         filteredProducts = filteredProducts.filter(p => p.mrp > p.price)
     }
@@ -43,14 +52,20 @@ function ShopContent() {
                     onClick={() => router.push('/shop')}
                     className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"
                 >
-                    {(search || sort || discount) && <MoveLeftIcon size={20} />}
+                    {(search || sort || discount || category) && <MoveLeftIcon size={20} />}
                     All <span className="text-slate-700 font-medium">Products</span>
                 </h1>
 
                 <div className="grid grid-cols-2 sm:flex flex-wrap gap-6 xl:gap-12 mx-auto mb-32">
-                    {filteredProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
+
+                    {filteredProducts.length > 0 ? (
+                        filteredProducts.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))
+                    ) : (
+                        <p className="text-slate-400 text-lg">No products found</p>
+                    )}
+
                 </div>
 
             </div>
