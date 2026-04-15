@@ -36,7 +36,6 @@ const Hero = () => {
                             <p className='text-3xl'>{currency}4.90</p>
                         </div>
 
-                        {/* LEARN MORE */}
                         <button
                             onClick={() => router.push('/shop')}
                             className='bg-slate-800 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-slate-900 hover:scale-103 active:scale-95 transition'
@@ -62,8 +61,9 @@ const Hero = () => {
                                 Best products
                             </p>
 
+                            {/* ✅ FIXED */}
                             <p
-                                onClick={() => router.push('/shop?sort=popular')}
+                                onClick={() => router.push('/shop?type=best')}
                                 className='flex items-center gap-1 mt-4 cursor-pointer'
                             >
                                 View more
@@ -81,8 +81,9 @@ const Hero = () => {
                                 20% discounts
                             </p>
 
+                            {/* ✅ FIXED */}
                             <p
-                                onClick={() => router.push('/shop?discount=true')}
+                                onClick={() => router.push('/shop?type=discount')}
                                 className='flex items-center gap-1 mt-4 cursor-pointer'
                             >
                                 View more
