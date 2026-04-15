@@ -28,7 +28,8 @@ const Footer = () => {
             title: "WEBSITE",
             links: [
                 { text: "Home", path: '/' },
-                { text: "Privacy Policy", path: '/' },
+                { text: "Privacy Policy", path: '/privacy-policy' },
+                { text: "Terms & Conditions", path: '/terms' }, // ✅ ADDED
                 { text: "Create Your Store", path: '/create-store' },
             ]
         },
@@ -56,7 +57,6 @@ const Footer = () => {
                         </p>
                     </div>
 
-                    {/* ✅ FIXED 2 COLUMN LAYOUT */}
                     <div className="grid grid-cols-2 gap-16 text-sm">
                         {linkSections.map((section, i) => (
                             <div key={i}>
