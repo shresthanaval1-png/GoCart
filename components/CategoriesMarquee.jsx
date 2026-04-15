@@ -5,7 +5,7 @@ const CategoriesMarquee = () => {
 
     const router = useRouter();
 
-    // ✅ UPDATED CATEGORIES (label + value)
+    // ✅ CATEGORIES
     const categories = [
         { label: "Headphones", value: "headphones" },
         { label: "Speakers", value: "speakers" },
@@ -22,25 +22,30 @@ const CategoriesMarquee = () => {
     ];
 
     return (
-        <div className="overflow-hidden w-full relative max-w-7xl mx-auto select-none group sm:my-20">
+        <div className="w-full max-w-7xl mx-auto sm:my-20 px-2">
 
-            <div className="absolute left-0 top-0 h-full w-20 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
+            {/* LEFT FADE */}
+            <div className="relative">
+                <div className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
 
-            <div className="flex min-w-[200%] animate-[marqueeScroll_10s_linear_infinite] sm:animate-[marqueeScroll_40s_linear_infinite] group-hover:[animation-play-state:paused] gap-4">
+                {/* ✅ SCROLL CONTAINER */}
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide py-3">
 
-                {[...categories, ...categories, ...categories, ...categories].map((cat, index) => (
-                    <button
-                        key={index}
-                        onClick={() => router.push(`/shop?category=${cat.value}`)}
-                        className="px-5 py-2 bg-slate-100 rounded-lg text-slate-500 text-xs sm:text-sm hover:bg-slate-600 hover:text-white active:scale-95 transition-all duration-300"
-                    >
-                        {cat.label}
-                    </button>
-                ))}
+                    {categories.map((cat, index) => (
+                        <button
+                            key={index}
+                            onClick={() => router.push(`/shop?category=${cat.value}`)}
+                            className="whitespace-nowrap px-5 py-2 bg-slate-100 rounded-full text-slate-600 text-sm hover:bg-green-600 hover:text-white active:scale-95 transition"
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
 
+                </div>
+
+                {/* RIGHT FADE */}
+                <div className="absolute right-0 top-0 h-full w-10 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
             </div>
-
-            <div className="absolute right-0 top-0 h-full w-20 md:w-40 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
 
         </div>
     );
