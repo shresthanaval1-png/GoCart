@@ -10,30 +10,51 @@ export default function Contact() {
     message: ""
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  // ✅ UPDATED: CONNECTED TO BACKEND
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    console.log(form);
-    alert("Message sent successfully!");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(form),
+      });
 
-    setForm({ name: "", email: "", message: "" });
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Message sent successfully!");
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        alert(data.error || "Failed to send message");
+      }
+
+    } catch (error) {
+      alert("Something went wrong");
+    }
+
+    setLoading(false);
   };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 text-slate-700">
 
-      {/* TITLE */}
       <h1 className="text-3xl font-semibold mb-6">Contact Us</h1>
 
       <p className="mb-10 text-slate-500">
         We're here to help you with anything you need.
       </p>
 
-      {/* CONTACT INFO */}
       <div className="grid md:grid-cols-2 gap-10 mb-12">
 
         <div className="space-y-4">
@@ -50,8 +71,8 @@ export default function Contact() {
 
           <p>
             <b>Email:</b>{" "}
-            <a href="mailto:Gocarthelp5@gmail.com" className="text-green-600 hover:underline">
-              Gocarthelp5@gmail.com
+            <a href="mailto:gocarthelp5@gmail.com" className="text-green-600 hover:underline">
+              gocarthelp5@gmail.com
             </a>
           </p>
 
@@ -59,7 +80,6 @@ export default function Contact() {
             <b>Address:</b> Ghaziabad, Indirapuram, 201014
           </p>
 
-          {/* TERMS LINKS */}
           <div className="pt-4">
             <p className="text-sm">
               <Link href="/terms" className="text-green-600 hover:underline">
@@ -73,7 +93,6 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* WHY WE STAND */}
         <div className="space-y-4">
           <h2 className="text-xl font-medium">💬 Why We Stand</h2>
 
@@ -92,7 +111,7 @@ export default function Contact() {
 
       </div>
 
-      {/* CONTACT FORM */}
+      {/* FORM */}
       <form onSubmit={handleSubmit} className="space-y-6">
 
         <div>
@@ -133,9 +152,10 @@ export default function Contact() {
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition"
+          disabled={loading}
+          className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
         >
-          Send Message
+          {loading ? "Sending..." : "Send Message"}
         </button>
 
       </form>
