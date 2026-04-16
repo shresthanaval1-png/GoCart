@@ -1,11 +1,41 @@
 'use client'
 import { useRouter } from "next/navigation";
+import { useRef } from "react";
 
 const CategoriesMarquee = () => {
 
     const router = useRouter();
+    const scrollRef = useRef(null);
 
-    // ✅ CATEGORIES
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    const handleMouseDown = (e) => {
+        isDown = true;
+        scrollRef.current.classList.add("cursor-grabbing");
+        startX = e.pageX - scrollRef.current.offsetLeft;
+        scrollLeft = scrollRef.current.scrollLeft;
+    };
+
+    const handleMouseLeave = () => {
+        isDown = false;
+        scrollRef.current.classList.remove("cursor-grabbing");
+    };
+
+    const handleMouseUp = () => {
+        isDown = false;
+        scrollRef.current.classList.remove("cursor-grabbing");
+    };
+
+    const handleMouseMove = (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - scrollRef.current.offsetLeft;
+        const walk = (x - startX) * 1.5; // scroll speed
+        scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
+
     const categories = [
         { label: "Headphones", value: "headphones" },
         { label: "Speakers", value: "speakers" },
@@ -22,29 +52,25 @@ const CategoriesMarquee = () => {
     ];
 
     return (
-        <div className="w-full max-w-7xl mx-auto sm:my-20 px-2">
+        <div className="max-w-7xl mx-auto px-6 sm:my-16">
 
-            {/* LEFT FADE */}
-            <div className="relative">
-                <div className="absolute left-0 top-0 h-full w-10 z-10 pointer-events-none bg-gradient-to-r from-white to-transparent" />
-
-                {/* ✅ SCROLL CONTAINER */}
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide py-3">
-
-                    {categories.map((cat, index) => (
-                        <button
-                            key={index}
-                            onClick={() => router.push(`/shop?category=${cat.value}`)}
-                            className="whitespace-nowrap px-5 py-2 bg-slate-100 rounded-full text-slate-600 text-sm hover:bg-green-600 hover:text-white active:scale-95 transition"
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
-
-                </div>
-
-                {/* RIGHT FADE */}
-                <div className="absolute right-0 top-0 h-full w-10 z-10 pointer-events-none bg-gradient-to-l from-white to-transparent" />
+            <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto no-scrollbar cursor-grab"
+                onMouseDown={handleMouseDown}
+                onMouseLeave={handleMouseLeave}
+                onMouseUp={handleMouseUp}
+                onMouseMove={handleMouseMove}
+            >
+                {categories.map((cat, index) => (
+                    <button
+                        key={index}
+                        onClick={() => router.push(`/shop?category=${cat.value}`)}
+                        className="whitespace-nowrap px-5 py-2 bg-slate-100 rounded-lg text-slate-600 text-sm hover:bg-slate-700 hover:text-white transition"
+                    >
+                        {cat.label}
+                    </button>
+                ))}
             </div>
 
         </div>
