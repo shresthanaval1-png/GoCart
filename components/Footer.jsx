@@ -27,10 +27,10 @@ const Footer = () => {
         {
             title: "WEBSITE",
             links: [
-                { text: "Home", path: '/' },
-                { text: "Privacy Policy", path: '/privacy-policy' },
-                { text: "Terms & Conditions", path: '/terms' }, // ✅ ADDED
-                { text: "Create Your Store", path: '/create-store' },
+                { text: "Home", path: '/', internal: true },
+                { text: "Privacy Policy", path: '/privacy-policy', internal: true },
+                { text: "Terms & Conditions", path: '/terms', internal: true },
+                { text: "Create Your Store", path: '/create-store', internal: true },
             ]
         },
         {
@@ -44,19 +44,23 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="mx-6 bg-white">
+        <footer id="footer" className="mx-6 bg-white">
             <div className="max-w-7xl mx-auto">
+
                 <div className="flex flex-col md:flex-row justify-between gap-10 py-10 border-b border-slate-500/30 text-slate-500">
 
+                    {/* LOGO */}
                     <div>
                         <Link href="/" className="text-4xl font-semibold text-slate-700">
-                            <span className="text-green-600">go</span>cart<span className="text-green-600 text-5xl">.</span>
+                            <span className="text-green-600">go</span>cart
+                            <span className="text-green-600 text-5xl">.</span>
                         </Link>
                         <p className="mt-6 text-sm max-w-[410px]">
                             Welcome to gocart, your ultimate destination for the latest gadgets.
                         </p>
                     </div>
 
+                    {/* LINKS */}
                     <div className="grid grid-cols-2 gap-16 text-sm">
                         {linkSections.map((section, i) => (
                             <div key={i}>
@@ -65,9 +69,18 @@ const Footer = () => {
                                     {section.links.map((link, j) => (
                                         <li key={j} className="flex items-center gap-2">
                                             {link.icon && <link.icon />}
-                                            <a href={link.path} className="hover:underline">
-                                                {link.text}
-                                            </a>
+
+                                            {/* ✅ INTERNAL vs EXTERNAL FIX */}
+                                            {link.internal ? (
+                                                <Link href={link.path} className="hover:underline">
+                                                    {link.text}
+                                                </Link>
+                                            ) : (
+                                                <a href={link.path} className="hover:underline">
+                                                    {link.text}
+                                                </a>
+                                            )}
+
                                         </li>
                                     ))}
                                 </ul>
@@ -77,9 +90,11 @@ const Footer = () => {
 
                 </div>
 
+                {/* COPYRIGHT */}
                 <p className="py-4 text-sm text-slate-500">
                     Copyright 2025 © gocart All Rights Reserved.
                 </p>
+
             </div>
         </footer>
     );
