@@ -32,7 +32,7 @@ const CategoriesMarquee = () => {
         if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - scrollRef.current.offsetLeft;
-        const walk = (x - startX) * 1.5; // scroll speed
+        const walk = (x - startX) * 2; // scroll speed
         scrollRef.current.scrollLeft = scrollLeft - walk;
     };
 
