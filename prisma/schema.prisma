@@ -9,7 +9,6 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
-// Required for creating a User: id, name, email, image, cart (optional JSON string)
 model User {
     id    String @id
     name  String
@@ -17,14 +16,12 @@ model User {
     image String
     cart  Json   @default("{}")
 
-    // Relations
     ratings     Rating[]
     Address     Address[]
     store       Store?
     buyerOrders Order[]   @relation("BuyerRelation")
 }
 
-// Required for creating a Product
 model Product {
     id          String   @id @default(cuid())
     name        String
@@ -38,7 +35,6 @@ model Product {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    // Relations
     store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
     orderItems OrderItem[]
     rating     Rating[]
@@ -152,11 +148,11 @@ model Store {
     user    User      @relation(fields: [userId], references: [id])
 }
 
-// ✅ NEW MODEL ADDED
 model ContactMessage {
     id        String   @id @default(cuid())
     name      String
     email     String
     message   String
+    isRead    Boolean  @default(false) // ✅ UNREAD FEATURE
     createdAt DateTime @default(now())
 }

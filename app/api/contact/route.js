@@ -1,17 +1,19 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-// ✅ GET ALL MESSAGES (USED BY ADMIN PANEL)
+// ✅ GET messages
 export async function GET() {
   try {
     const messages = await prisma.contactMessage.findMany({
-      orderBy: { createdAt: "desc" }
+      orderBy: [
+        { isRead: "asc" },
+        { createdAt: "desc" }
+      ]
     });
 
     return NextResponse.json({ messages });
 
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch messages" },
       { status: 500 }
@@ -19,32 +21,31 @@ export async function GET() {
   }
 }
 
-// ✅ SAVE MESSAGE (CONTACT FORM)
+// ✅ SAVE MESSAGE
 export async function POST(req) {
   try {
-    const { name, email, message } = await req.json();
+    const body = await req.json();
+
+    const { name, email, message } = body;
 
     if (!name || !email || !message) {
       return NextResponse.json(
-        { error: "All fields are required" },
+        { error: "All fields required" },
         { status: 400 }
       );
     }
 
     await prisma.contactMessage.create({
-      data: {
-        name,
-        email,
-        message,
-      },
+      data: { name, email, message }
     });
 
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error(error);
+    console.error("POST ERROR:", error);
+
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: error.message },
       { status: 500 }
     );
   }
