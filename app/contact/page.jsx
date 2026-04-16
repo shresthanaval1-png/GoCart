@@ -50,8 +50,8 @@ export default function Contact() {
 
           <p>
             <b>Email:</b>{" "}
-            <a href="mailto:Gocarthelp@gmail.com" className="text-green-600 hover:underline">
-              Gocarthelp@gmail.com
+            <a href="mailto:Gocarthelp5@gmail.com" className="text-green-600 hover:underline">
+              Gocarthelp5@gmail.com
             </a>
           </p>
 

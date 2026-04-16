@@ -37,7 +37,7 @@ const Footer = () => {
             title: "CONTACT",
             links: [
                 { text: "+91 8700525832", path: "tel:+918700525832", icon: PhoneIcon },
-                { text: "Gocarthelp@gmail.com", path: "mailto:Gocarthelp@gmail.com", icon: MailIcon },
+                { text: "Gocarthelp5@gmail.com", path: "mailto:Gocarthelp5@gmail.com", icon: MailIcon },
                 { text: "Ghaziabad, Indirapuram", path: "https://www.google.com/maps?q=Ghaziabad+Indirapuram", icon: MapPinIcon }
             ]
         }
