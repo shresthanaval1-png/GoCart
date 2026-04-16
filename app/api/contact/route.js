@@ -1,6 +1,25 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+// ✅ GET ALL MESSAGES (USED BY ADMIN PANEL)
+export async function GET() {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: "desc" }
+    });
+
+    return NextResponse.json({ messages });
+
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Failed to fetch messages" },
+      { status: 500 }
+    );
+  }
+}
+
+// ✅ SAVE MESSAGE (CONTACT FORM)
 export async function POST(req) {
   try {
     const { name, email, message } = await req.json();
