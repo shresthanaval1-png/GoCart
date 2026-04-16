@@ -48,8 +48,15 @@ export default function PrivacyPolicy() {
 
       <h2 className="text-xl font-medium mt-8 mb-3">7. Contact Us</h2>
       <p>
-        Email: <Gocarthelp5></Gocarthelp5>@gmail.com <br />
-        Location: Ghaziabad, Indirapuram
+        Email:{" "}
+        <a
+          href="mailto:gocarthelp5@gmail.com"
+          className="text-green-600 hover:underline"
+        >
+          gocarthelp5@gmail.com
+        </a>
+        <br />
+        Location: Ghaziabad, Indirapuram, 201014
       </p>
 
     </div>
