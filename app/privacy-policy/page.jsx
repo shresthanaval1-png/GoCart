@@ -1,6 +1,21 @@
+'use client'
+import { MoveLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 export default function PrivacyPolicy() {
+
+  const router = useRouter();
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 text-slate-700">
+
+      {/* ✅ BACK BUTTON */}
+      <button
+        onClick={() => router.back()}
+        className="mb-4 p-2 rounded-full hover:bg-slate-100 transition text-slate-500 hover:text-green-600"
+      >
+        <MoveLeftIcon size={20} />
+      </button>
 
       <h1 className="text-3xl font-semibold mb-6">Privacy Policy</h1>
 

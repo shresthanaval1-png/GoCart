@@ -1,8 +1,12 @@
 'use client'
 import { useState } from "react";
 import Link from "next/link";
+import { MoveLeftIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Contact() {
+
+  const router = useRouter()
 
   const [form, setForm] = useState({
     name: "",
@@ -16,7 +20,6 @@ export default function Contact() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ UPDATED: CONNECTED TO BACKEND
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -48,6 +51,14 @@ export default function Contact() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 text-slate-700">
+
+      {/* ✅ BACK BUTTON */}
+      <button
+        onClick={() => router.back()}
+        className="mb-4 p-2 rounded-full hover:bg-slate-100 transition text-slate-500 hover:text-green-600"
+      >
+        <MoveLeftIcon size={20} />
+      </button>
 
       <h1 className="text-3xl font-semibold mb-6">Contact Us</h1>
 

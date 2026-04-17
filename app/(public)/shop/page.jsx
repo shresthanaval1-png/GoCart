@@ -12,7 +12,7 @@ function ShopContent() {
     const sort = searchParams.get('sort')
     const discount = searchParams.get('discount')
     const category = searchParams.get('category')
-    const type = searchParams.get('type') // ✅ NEW
+    const type = searchParams.get('type')
 
     const router = useRouter()
     const products = useSelector(state => state.product.list)
@@ -40,7 +40,7 @@ function ShopContent() {
         )
     }
 
-    // 💸 OLD DISCOUNT FILTER
+    // 💸 DISCOUNT FILTER
     if (discount === 'true') {
         filteredProducts = filteredProducts.filter(p => p.mrp > p.price)
     }
@@ -64,15 +64,20 @@ function ShopContent() {
         <div className="min-h-[70vh] mx-6">
             <div className="max-w-7xl mx-auto">
 
-                <h1
-                    onClick={() => router.push('/shop')}
-                    className="text-2xl text-slate-500 my-6 flex items-center gap-2 cursor-pointer"
+                {/* ✅ BACK BUTTON */}
+                <button
+                    onClick={() => router.push('/')}
+                    className="mt-6 mb-2 flex items-center gap-2 text-sm text-slate-500 hover:text-green-600 transition"
                 >
-                    {(search || sort || discount || category || type) && <MoveLeftIcon size={20} />}
-                    All <span className="text-slate-700 font-medium">Products</span>
+                    <MoveLeftIcon size={18} />
+                </button>
+
+                {/* TITLE */}
+                <h1 className="text-2xl text-slate-700 font-medium my-4">
+                    All Products
                 </h1>
 
-                {/* ✅ NEW: TABS UI */}
+                {/* FILTER TABS */}
                 <div className="flex gap-3 mb-6 flex-wrap">
 
                     <button
