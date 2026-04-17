@@ -1,4 +1,5 @@
 'use client'
+import Breadcrumb from "@/components/Breadcrumb";
 import { MoveLeftIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -9,24 +10,37 @@ export default function PrivacyPolicy() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-12 text-slate-700">
 
-      {/* ✅ BACK BUTTON */}
+      {/* 🔙 BACK BUTTON */}
       <button
         onClick={() => router.back()}
-        className="mb-4 p-2 rounded-full hover:bg-slate-100 transition text-slate-500 hover:text-green-600"
+        className="mb-3 p-2 rounded-full hover:bg-slate-100 transition text-slate-500 hover:text-green-600"
       >
         <MoveLeftIcon size={20} />
       </button>
 
-      <h1 className="text-3xl font-semibold mb-6">Privacy Policy</h1>
+      {/* 🍞 BREADCRUMB */}
+      <Breadcrumb
+        items={[
+          { label: "Home", href: "/" },
+          { label: "Privacy Policy", href: "/privacy-policy" }
+        ]}
+      />
+
+      {/* 🧾 TITLE */}
+      <h1 className="text-3xl font-semibold mt-2 mb-6 text-slate-800">
+        Privacy Policy
+      </h1>
 
       <p className="mb-6 text-sm text-slate-500">
         Last updated: {new Date().toLocaleDateString()}
       </p>
 
-      <p className="mb-6">
+      {/* INTRO */}
+      <p className="mb-6 leading-relaxed">
         Welcome to GoCart. Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use our website.
       </p>
 
+      {/* SECTION 1 */}
       <h2 className="text-xl font-medium mt-8 mb-3">1. Information We Collect</h2>
       <ul className="list-disc pl-6 space-y-2">
         <li>Your name, email, and account details when you register</li>
@@ -34,6 +48,7 @@ export default function PrivacyPolicy() {
         <li>Device and browser information</li>
       </ul>
 
+      {/* SECTION 2 */}
       <h2 className="text-xl font-medium mt-8 mb-3">2. How We Use Your Information</h2>
       <ul className="list-disc pl-6 space-y-2">
         <li>To provide and improve our services</li>
@@ -41,28 +56,33 @@ export default function PrivacyPolicy() {
         <li>To communicate with you about updates and offers</li>
       </ul>
 
+      {/* SECTION 3 */}
       <h2 className="text-xl font-medium mt-8 mb-3">3. Sharing Your Information</h2>
-      <p>
+      <p className="leading-relaxed">
         We do not sell your personal data. We may share your data with trusted services such as payment providers and hosting platforms to operate our website.
       </p>
 
+      {/* SECTION 4 */}
       <h2 className="text-xl font-medium mt-8 mb-3">4. Cookies</h2>
-      <p>
+      <p className="leading-relaxed">
         We use cookies to enhance your browsing experience and analyze website traffic.
       </p>
 
+      {/* SECTION 5 */}
       <h2 className="text-xl font-medium mt-8 mb-3">5. Data Security</h2>
-      <p>
+      <p className="leading-relaxed">
         We take reasonable steps to protect your data, but no system is completely secure.
       </p>
 
+      {/* SECTION 6 */}
       <h2 className="text-xl font-medium mt-8 mb-3">6. Your Rights</h2>
-      <p>
+      <p className="leading-relaxed">
         You can request access, update, or deletion of your personal data by contacting us.
       </p>
 
+      {/* SECTION 7 */}
       <h2 className="text-xl font-medium mt-8 mb-3">7. Contact Us</h2>
-      <p>
+      <p className="leading-relaxed">
         Email:{" "}
         <a
           href="mailto:gocarthelp5@gmail.com"
