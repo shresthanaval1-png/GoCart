@@ -12,92 +12,104 @@ const Hero = () => {
     const router = useRouter()
 
     return (
-        <div className='mx-6'>
-            <div className='flex max-xl:flex-col gap-8 max-w-7xl mx-auto my-10'>
+        <div className='mx-4 md:mx-6'>
+            <div className='flex max-xl:flex-col gap-6 max-w-7xl mx-auto my-8'>
 
                 {/* LEFT HERO */}
-                <div className='relative flex-1 flex flex-col bg-green-200 rounded-3xl xl:min-h-100 group'>
-                    <div className='p-5 sm:p-16'>
+                <div className='relative flex-1 flex flex-col justify-between bg-gradient-to-br from-green-200 via-green-100 to-white rounded-3xl min-h-[320px] sm:min-h-[420px] overflow-hidden shadow-sm hover:shadow-md transition group'>
 
-                        <div className='inline-flex items-center gap-3 bg-green-300 text-green-600 pr-4 p-1 rounded-full text-xs sm:text-sm'>
-                            <span className='bg-green-600 px-3 py-1 max-sm:ml-1 rounded-full text-white text-xs'>
-                                NEWS
+                    <div className='p-6 sm:p-12 z-10'>
+
+                        {/* TOP BADGE */}
+                        <div className='inline-flex items-center gap-2 bg-green-100 text-green-700 pr-3 pl-1 py-1 rounded-full text-xs sm:text-sm'>
+                            <span className='bg-green-600 px-2 py-0.5 rounded-full text-white text-xs'>
+                                NEW
                             </span>
-                            Free Shipping on Orders Above $50!
-                            <ChevronRightIcon className='group-hover:ml-2 transition-all' size={16} />
+                            Free Shipping on Orders Above $50
+                            <ChevronRightIcon className='group-hover:ml-1 transition-all' size={14} />
                         </div>
 
-                        <h2 className='text-3xl sm:text-5xl leading-[1.2] my-3 font-medium bg-gradient-to-r from-slate-600 to-[#A0FF74] bg-clip-text text-transparent max-w-xs sm:max-w-md'>
-                            Gadgets you'll love. Prices you'll trust.
+                        {/* HEADING */}
+                        <h2 className='text-3xl sm:text-5xl font-semibold leading-tight mt-4 max-w-md text-slate-800'>
+                            Gadgets you'll love.
+                            <span className='block text-green-600'>
+                                Prices you'll trust.
+                            </span>
                         </h2>
 
-                        <div className='text-slate-800 text-sm font-medium mt-4 sm:mt-8'>
-                            <p>Starts from</p>
-                            <p className='text-3xl'>{currency}4.90</p>
+                        {/* PRICE */}
+                        <div className='text-slate-700 text-sm font-medium mt-6'>
+                            <p>Starting from</p>
+                            <p className='text-3xl font-bold'>
+                                {currency}4.90
+                            </p>
                         </div>
 
+                        {/* BUTTON */}
                         <button
                             onClick={() => router.push('/shop')}
-                            className='bg-slate-800 text-white text-sm py-2.5 px-7 sm:py-5 sm:px-12 mt-4 sm:mt-10 rounded-md hover:bg-slate-900 hover:scale-103 active:scale-95 transition'
+                            className='mt-6 bg-slate-900 text-white text-sm px-6 py-2.5 sm:px-10 sm:py-3 rounded-lg hover:bg-black hover:scale-105 active:scale-95 transition'
                         >
-                            LEARN MORE
+                            Shop Now
                         </button>
                     </div>
 
+                    {/* IMAGE */}
                     <Image
-                        className='sm:absolute bottom-0 right-0 md:right-10 w-full sm:max-w-sm'
+                        className='absolute bottom-0 right-0 w-full max-w-[260px] sm:max-w-sm object-contain group-hover:scale-105 transition duration-300'
                         src={assets.hero_model_img}
                         alt=""
                     />
                 </div>
 
                 {/* RIGHT CARDS */}
-                <div className='flex flex-col md:flex-row xl:flex-col gap-5 w-full xl:max-w-sm text-sm text-slate-600'>
+                <div className='flex flex-col md:flex-row xl:flex-col gap-5 w-full xl:max-w-sm text-sm'>
 
                     {/* BEST PRODUCTS */}
-                    <div className='flex-1 flex items-center justify-between w-full bg-orange-200 rounded-3xl p-6 px-8 group'>
+                    <div className='flex-1 flex items-center justify-between bg-orange-100 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition group cursor-pointer'>
                         <div>
-                            <p className='text-3xl font-medium bg-gradient-to-r from-slate-800 to-[#FFAD51] bg-clip-text text-transparent max-w-40'>
-                                Best products
+                            <p className='text-2xl sm:text-3xl font-semibold text-slate-800 max-w-36'>
+                                Best Products
                             </p>
 
-                            {/* ✅ FIXED */}
                             <p
                                 onClick={() => router.push('/shop?type=best')}
-                                className='flex items-center gap-1 mt-4 cursor-pointer'
+                                className='flex items-center gap-1 mt-4 text-slate-600 hover:text-orange-600 transition'
                             >
                                 View more
-                                <ArrowRightIcon className='group-hover:ml-2 transition-all' size={18} />
+                                <ArrowRightIcon className='group-hover:ml-1 transition-all' size={16} />
                             </p>
                         </div>
 
-                        <Image className='w-35' src={assets.hero_product_img1} alt="" />
+                        <Image className='w-24 sm:w-28 group-hover:scale-105 transition' src={assets.hero_product_img1} alt="" />
                     </div>
 
                     {/* DISCOUNTS */}
-                    <div className='flex-1 flex items-center justify-between w-full bg-blue-200 rounded-3xl p-6 px-8 group'>
+                    <div className='flex-1 flex items-center justify-between bg-blue-100 rounded-3xl p-5 sm:p-6 shadow-sm hover:shadow-md transition group cursor-pointer'>
                         <div>
-                            <p className='text-3xl font-medium bg-gradient-to-r from-slate-800 to-[#78B2FF] bg-clip-text text-transparent max-w-40'>
-                                20% discounts
+                            <p className='text-2xl sm:text-3xl font-semibold text-slate-800 max-w-36'>
+                                20% Discounts
                             </p>
 
-                            {/* ✅ FIXED */}
                             <p
                                 onClick={() => router.push('/shop?type=discount')}
-                                className='flex items-center gap-1 mt-4 cursor-pointer'
+                                className='flex items-center gap-1 mt-4 text-slate-600 hover:text-blue-600 transition'
                             >
                                 View more
-                                <ArrowRightIcon className='group-hover:ml-2 transition-all' size={18} />
+                                <ArrowRightIcon className='group-hover:ml-1 transition-all' size={16} />
                             </p>
                         </div>
 
-                        <Image className='w-35' src={assets.hero_product_img2} alt="" />
+                        <Image className='w-24 sm:w-28 group-hover:scale-105 transition' src={assets.hero_product_img2} alt="" />
                     </div>
 
                 </div>
             </div>
 
-            <CategoriesMarquee />
+            {/* CATEGORY MARQUEE */}
+            <div className='mt-6'>
+                <CategoriesMarquee />
+            </div>
         </div>
     )
 }
