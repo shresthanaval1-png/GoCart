@@ -16,9 +16,9 @@ model User {
     cart  Json   @default("{}")
 
     ratings     Rating[]
-    Address     Address[]
+    addresses   Address[]   // ✅ renamed (better practice)
     store       Store?
-    buyerOrders Order[]   @relation("BuyerRelation")
+    buyerOrders Order[]     @relation("BuyerRelation")
 
     // 🔥 CHAT RELATION
     chats Chat[]
@@ -67,7 +67,8 @@ model Order {
     updatedAt     DateTime      @updatedAt
     isCouponUsed  Boolean       @default(false)
     coupon        Json          @default("{}")
-    orderItems    OrderItem[]
+
+    orderItems OrderItem[]
 
     user    User    @relation("BuyerRelation", fields: [userId], references: [id])
     store   Store   @relation(fields: [storeId], references: [id])
@@ -80,7 +81,8 @@ model OrderItem {
     quantity  Int
     price     Float
 
-    order   Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+    // ✅ FINAL FIX (correct relation)
+    order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
     product Product @relation(fields: [productId], references: [id])
 
     @@id([orderId, productId])
@@ -115,8 +117,8 @@ model Address {
     phone     String
     createdAt DateTime @default(now())
 
-    Order Order[]
-    user  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    orders Order[]   // ✅ renamed (cleaner)
+    user   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Coupon {
@@ -145,9 +147,9 @@ model Store {
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
 
-    Product Product[]
-    Order   Order[]
-    user    User      @relation(fields: [userId], references: [id])
+    products Product[]
+    orders   Order[]
+    user     User      @relation(fields: [userId], references: [id])
 }
 
 model ContactMessage {
@@ -160,7 +162,7 @@ model ContactMessage {
 }
 
 //////////////////////////////////////////////////////
-// 🔥 CHAT SYSTEM (UPDATED)
+// 🔥 CHAT SYSTEM
 //////////////////////////////////////////////////////
 
 model Chat {
@@ -168,8 +170,8 @@ model Chat {
     userId    String
     createdAt DateTime      @default(now())
 
-    user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-    messages  ChatMessage[]
+    user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+    messages ChatMessage[]
 }
 
 model ChatMessage {
@@ -179,7 +181,7 @@ model ChatMessage {
     message   String
     createdAt DateTime @default(now())
 
-    // ✅ NEW FIELD (SEEN / DELIVERED)
+    // ✅ SEEN / DELIVERED FEATURE
     isSeen    Boolean  @default(false)
 
     chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
