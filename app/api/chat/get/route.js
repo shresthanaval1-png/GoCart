@@ -6,14 +6,47 @@ export async function GET(req) {
   try {
     const { userId } = getAuth(req)
 
-    const chat = await prisma.chat.findFirst({
+    // 🔒 AUTH CHECK
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      )
+    }
+
+    // 🔍 FETCH CHAT
+    let chat = await prisma.chat.findFirst({
       where: { userId },
-      include: { messages: true }
+      include: {
+        messages: {
+          orderBy: { createdAt: "asc" }
+        }
+      }
     })
+
+    // 🆕 CREATE CHAT IF NOT EXISTS
+    if (!chat) {
+      chat = await prisma.chat.create({
+        data: { userId },
+        include: {
+          messages: true
+        }
+      })
+    }
 
     return NextResponse.json({ chat })
 
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 })
+    // 🔥 FULL DEBUG LOG
+    console.error("❌ CHAT GET FULL ERROR:", error)
+
+    return NextResponse.json(
+      {
+        error: error.message,
+        stack: error.stack,   // shows exact crash line
+        hint: "Check Prisma schema / relations"
+      },
+      { status: 500 }
+    )
   }
 }
