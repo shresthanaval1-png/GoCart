@@ -59,7 +59,7 @@ const Navbar = () => {
                         <span className="text-indigo-600 text-4xl">.</span>
                     </Link>
 
-                    {/* MENU */}
+                    {/* DESKTOP MENU */}
                     <div className="hidden sm:flex items-center gap-6 text-slate-700 text-sm font-medium">
 
                         <Link href="/" className="hover:text-indigo-600 transition">Home</Link>
@@ -83,7 +83,7 @@ const Navbar = () => {
                             />
                         </form>
 
-                        {/* CART */}
+                        {/* 🛒 CART */}
                         <Link href="/cart" className="relative flex items-center gap-1 hover:text-indigo-600 transition">
                             <ShoppingCart size={18} />
                             <span>Cart</span>
@@ -93,6 +93,12 @@ const Navbar = () => {
                                     {cartCount}
                                 </span>
                             )}
+                        </Link>
+
+                        {/* 📦 MY ORDERS (NEW) */}
+                        <Link href="/my-orders" className="flex items-center gap-1 hover:text-indigo-600 transition">
+                            <PackageIcon size={18} />
+                            <span>My Orders</span>
                         </Link>
 
                         {/* SELLER */}
@@ -119,8 +125,10 @@ const Navbar = () => {
 
                     </div>
 
-                    {/* MOBILE */}
+                    {/* 📱 MOBILE */}
                     <div className="sm:hidden flex items-center gap-3">
+
+                        {/* CART */}
                         <Link href="/cart" className="relative">
                             <ShoppingCart size={20} />
                             {cartCount > 0 && (
@@ -128,6 +136,11 @@ const Navbar = () => {
                                     {cartCount}
                                 </span>
                             )}
+                        </Link>
+
+                        {/* MY ORDERS */}
+                        <Link href="/my-orders">
+                            <PackageIcon size={20} />
                         </Link>
 
                         {!user ? (

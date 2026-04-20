@@ -3,31 +3,44 @@ import { NextResponse } from "next/server"
 
 export async function GET() {
   try {
-    const coupons = await prisma.coupon.findMany()
-
     const now = new Date()
 
-    // ✅ FILTER VALID COUPONS
-    const validCoupons = coupons.filter(c =>
-      new Date(c.expiresAt) > now
-    )
+    // 🔥 FETCH ONLY VALID COUPONS FROM DB (better than filtering in JS)
+    const coupons = await prisma.coupon.findMany({
+      where: {
+        expiresAt: {
+          gt: now
+        },
+        isPublic: true // only public coupons
+      }
+    })
 
-    if (validCoupons.length === 0) {
+    // ❌ NO COUPONS
+    if (!coupons.length) {
       return NextResponse.json({ coupon: null })
     }
 
-    // ✅ FIND BEST (MAX DISCOUNT)
-    const bestCoupon = validCoupons.reduce((best, current) => {
+    // ✅ FIND BEST COUPON (MAX DISCOUNT)
+    const bestCoupon = coupons.reduce((best, current) => {
       return current.discount > best.discount ? current : best
     })
 
-    return NextResponse.json({ coupon: bestCoupon })
+    // ✅ CLEAN RESPONSE (important for frontend)
+    return NextResponse.json({
+      coupon: {
+        code: bestCoupon.code,
+        discount: bestCoupon.discount
+      }
+    })
 
   } catch (error) {
     console.error("❌ BEST COUPON ERROR:", error)
 
     return NextResponse.json(
-      { error: "Server error" },
+      {
+        error: "Internal Server Error",
+        details: error.message
+      },
       { status: 500 }
     )
   }

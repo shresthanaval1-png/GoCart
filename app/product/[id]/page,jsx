@@ -1,0 +1,153 @@
+'use client'
+
+import { useEffect, useState } from "react"
+
+export default function ProductPage({ params }) {
+
+  const { id } = params
+
+  const [product, setProduct] = useState(null)
+
+  // ⭐ RATING STATES
+  const [ratings, setRatings] = useState([])
+  const [avg, setAvg] = useState(0)
+  const [count, setCount] = useState(0)
+
+  const [loading, setLoading] = useState(true)
+
+  // 🔥 FETCH PRODUCT
+  const fetchProduct = async () => {
+    try {
+      const res = await fetch(`/api/product/${id}`)
+      const data = await res.json()
+      setProduct(data.product)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  // ⭐ FETCH RATINGS
+  const fetchRatings = async () => {
+    try {
+      const res = await fetch(`/api/rating/product?productId=${id}`)
+      const data = await res.json()
+
+      setRatings(data.ratings || [])
+      setAvg(data.average || 0)
+      setCount(data.count || 0)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchProduct()
+    fetchRatings()
+  }, [id])
+
+  if (!product || loading) {
+    return (
+      <div className="p-6 text-center text-gray-500">
+        Loading product...
+      </div>
+    )
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto p-6">
+
+      {/* 🛍️ PRODUCT SECTION */}
+      <div className="grid md:grid-cols-2 gap-8">
+
+        {/* IMAGE */}
+        <img
+          src={product.images[0]}
+          className="w-full h-[400px] object-cover rounded-xl border"
+        />
+
+        {/* DETAILS */}
+        <div>
+
+          <h1 className="text-2xl font-semibold">
+            {product.name}
+          </h1>
+
+          {/* ⭐ AVG RATING */}
+          <div className="mt-3 flex items-center gap-2">
+
+            <span className="text-yellow-400 text-lg">
+              {"★".repeat(Math.round(avg))}
+              {"☆".repeat(5 - Math.round(avg))}
+            </span>
+
+            <span className="text-sm text-gray-600">
+              {avg} ({count} reviews)
+            </span>
+
+          </div>
+
+          <p className="mt-4 text-gray-600">
+            {product.description}
+          </p>
+
+          <p className="mt-4 text-xl font-semibold">
+            ₹{product.price}
+          </p>
+
+        </div>
+
+      </div>
+
+      {/* ⭐ REVIEWS SECTION */}
+      <div className="mt-10">
+
+        <h2 className="text-xl font-semibold mb-4">
+          Customer Reviews
+        </h2>
+
+        {ratings.length === 0 ? (
+          <p className="text-gray-500">
+            No reviews yet.
+          </p>
+        ) : (
+
+          <div className="space-y-4">
+
+            {ratings.map((r) => (
+
+              <div
+                key={r.id}
+                className="border rounded-lg p-4 bg-white shadow-sm"
+              >
+
+                {/* ⭐ STARS */}
+                <div className="text-yellow-400">
+                  {"★".repeat(r.rating)}
+                  {"☆".repeat(5 - r.rating)}
+                </div>
+
+                {/* 📝 REVIEW */}
+                <p className="text-sm mt-2 text-gray-700">
+                  {r.review || "No review provided"}
+                </p>
+
+                {/* 📅 DATE */}
+                <p className="text-xs text-gray-400 mt-2">
+                  {new Date(r.createdAt).toLocaleDateString()}
+                </p>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+  )
+}
