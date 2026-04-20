@@ -1,7 +1,7 @@
 {/* 🔥 TOGGLES */}
 <div className="flex gap-4 text-sm mt-2">
 
-    <label className="flex items-center gap-2">
+    <label className="flex items-center gap-2 cursor-pointer">
         <input
             type="checkbox"
             checked={newCoupon.forNewUser}
@@ -15,7 +15,7 @@
         <span>New User</span>
     </label>
 
-    <label className="flex items-center gap-2">
+    <label className="flex items-center gap-2 cursor-pointer">
         <input
             type="checkbox"
             checked={newCoupon.forMember}
