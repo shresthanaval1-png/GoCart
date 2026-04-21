@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function ProductPage({ params }) {
 
   const { id } = params
+  const router = useRouter()
 
   const [product, setProduct] = useState(null)
 
@@ -35,6 +37,7 @@ export default function ProductPage({ params }) {
       setRatings(data.ratings || [])
       setAvg(data.average || 0)
       setCount(data.count || 0)
+
     } catch (err) {
       console.error(err)
     } finally {
@@ -47,6 +50,11 @@ export default function ProductPage({ params }) {
     fetchRatings()
   }, [id])
 
+  // ✅ SIMPLE BACK BUTTON (ALWAYS WORKS)
+  const handleBack = () => {
+    router.push("/shop")
+  }
+
   if (!product || loading) {
     return (
       <div className="p-6 text-center text-gray-500">
@@ -58,12 +66,20 @@ export default function ProductPage({ params }) {
   return (
     <div className="max-w-6xl mx-auto p-6">
 
+      {/* 🔙 BACK BUTTON */}
+      <button
+        onClick={handleBack}
+        className="mb-6 px-4 py-2 border rounded-lg text-sm hover:bg-gray-100 transition"
+      >
+        ← Back to Shop
+      </button>
+
       {/* 🛍️ PRODUCT SECTION */}
       <div className="grid md:grid-cols-2 gap-8">
 
         {/* IMAGE */}
         <img
-          src={product.images[0]}
+          src={product.images?.[0] || "/placeholder.png"}
           className="w-full h-[400px] object-cover rounded-xl border"
         />
 
@@ -100,7 +116,7 @@ export default function ProductPage({ params }) {
 
       </div>
 
-      {/* ⭐ REVIEWS SECTION */}
+      {/* ⭐ REVIEWS */}
       <div className="mt-10">
 
         <h2 className="text-xl font-semibold mb-4">
@@ -122,18 +138,15 @@ export default function ProductPage({ params }) {
                 className="border rounded-lg p-4 bg-white shadow-sm"
               >
 
-                {/* ⭐ STARS */}
                 <div className="text-yellow-400">
-                  {"★".repeat(r.rating)}
-                  {"☆".repeat(5 - r.rating)}
+                  {"★".repeat(Math.round(r.rating))}
+                  {"☆".repeat(5 - Math.round(r.rating))}
                 </div>
 
-                {/* 📝 REVIEW */}
                 <p className="text-sm mt-2 text-gray-700">
                   {r.review || "No review provided"}
                 </p>
 
-                {/* 📅 DATE */}
                 <p className="text-xs text-gray-400 mt-2">
                   {new Date(r.createdAt).toLocaleDateString()}
                 </p>
