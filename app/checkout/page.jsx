@@ -1,20 +1,59 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
+import { useSelector } from "react-redux"
 
 export default function CheckoutPage() {
 
-  // 🧾 MOCK TOTAL
-  const total = 1000
+  const searchParams = useSearchParams()
+  const type = searchParams.get("type")
+
+  const products = useSelector(state => state.product.list)
+  const cartItems = useSelector(state => state.cart.cartItems)
+
+  const [items, setItems] = useState([])
 
   const [couponCode, setCouponCode] = useState("")
   const [discount, setDiscount] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  // 🧮 FINAL TOTAL
+  // 🔥 LOAD ITEMS (BUY NOW / CART)
+  useEffect(() => {
+
+    if (type === "buyNow") {
+      const stored = localStorage.getItem("buyNow")
+
+      if (stored) {
+        const item = JSON.parse(stored)
+
+        const product = products.find(p => p.id === item.productId)
+
+        if (product) {
+          setItems([{ ...product, quantity: item.quantity }])
+        }
+      }
+
+    } else {
+
+      const cartData = Object.keys(cartItems).map(id => {
+        const product = products.find(p => p.id === id)
+        return product ? { ...product, quantity: cartItems[id] } : null
+      }).filter(Boolean)
+
+      setItems(cartData)
+    }
+
+  }, [type, products, cartItems])
+
+  // 💰 CALCULATE TOTAL
+  const total = items.reduce((acc, item) => {
+    return acc + item.price * item.quantity
+  }, 0)
+
   const finalTotal = total - (total * discount) / 100
 
-  // ✅ AUTO APPLY BEST COUPON (STEP 2)
+  // ✅ AUTO APPLY BEST COUPON
   const autoApplyBestCoupon = async () => {
     try {
       const res = await fetch("/api/coupon/best")
@@ -30,12 +69,11 @@ export default function CheckoutPage() {
     }
   }
 
-  // 🔥 RUN ON LOAD
   useEffect(() => {
     autoApplyBestCoupon()
   }, [])
 
-  // ✅ MANUAL APPLY
+  // ✅ APPLY COUPON
   const applyCoupon = async () => {
     try {
       if (!couponCode) {
@@ -71,6 +109,14 @@ export default function CheckoutPage() {
     }
   }
 
+  // 🧾 PLACE ORDER
+  const handlePlaceOrder = () => {
+    alert("Order placed successfully 🎉")
+
+    // clear buy now after order
+    localStorage.removeItem("buyNow")
+  }
+
   return (
     <div className="max-w-3xl mx-auto p-6">
 
@@ -78,13 +124,21 @@ export default function CheckoutPage() {
         Checkout
       </h1>
 
-      {/* 🛒 CART SUMMARY */}
-      <div className="border p-4 rounded-lg mb-6 bg-white shadow-sm">
+      {/* 🛒 ITEMS */}
+      <div className="border p-4 rounded-lg mb-6 bg-white shadow-sm space-y-4">
+
         <p className="text-sm text-gray-500">Order Summary</p>
-        <p className="mt-2 font-medium">Items Total: ₹{total}</p>
+
+        {items.map(item => (
+          <div key={item.id} className="flex justify-between text-sm">
+            <span>{item.name} x {item.quantity}</span>
+            <span>₹{item.price * item.quantity}</span>
+          </div>
+        ))}
+
       </div>
 
-      {/* 🎟️ COUPON SECTION */}
+      {/* 🎟️ COUPON */}
       <div className="border p-4 rounded-lg bg-white shadow-sm space-y-3">
 
         <p className="font-medium">Apply Coupon</p>
@@ -106,16 +160,15 @@ export default function CheckoutPage() {
           </button>
         </div>
 
-        {/* ✅ STEP 3 UI */}
         {discount > 0 && (
           <p className="text-green-600 text-sm">
-            🎉 Best coupon "{couponCode}" auto applied ({discount}% OFF)
+            🎉 Coupon "{couponCode}" applied ({discount}% OFF)
           </p>
         )}
 
       </div>
 
-      {/* 💰 TOTAL SECTION */}
+      {/* 💰 TOTAL */}
       <div className="mt-6 border p-4 rounded-lg bg-white shadow-sm space-y-2">
 
         <div className="flex justify-between text-sm">
@@ -137,8 +190,11 @@ export default function CheckoutPage() {
 
       </div>
 
-      {/* 🧾 PLACE ORDER */}
-      <button className="mt-6 w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">
+      {/* 🧾 ORDER */}
+      <button
+        onClick={handlePlaceOrder}
+        className="mt-6 w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition"
+      >
         Place Order
       </button>
 

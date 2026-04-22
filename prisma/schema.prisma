@@ -178,3 +178,24 @@ model ChatMessage {
 
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 }
+
+//////////////////////////////////////////////////////
+// ✅ UPDATED USER PROFILE (FINAL VERSION)
+//////////////////////////////////////////////////////
+
+model UserProfile {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+
+  name      String?
+  age       Int?
+  gender    String?
+  image     String?
+
+  email     String?
+  phone     String?
+  address   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
