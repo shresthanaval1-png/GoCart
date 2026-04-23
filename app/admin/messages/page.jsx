@@ -10,14 +10,14 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState([])
   const [reply, setReply] = useState("")
 
-  // ✅ FETCH ALL CHATS
+  // FETCH ALL CHATS
   const fetchChats = async () => {
     const res = await fetch("/api/admin/chat")
     const data = await res.json()
     setChats(data.chats || [])
   }
 
-  // ✅ FETCH SINGLE CHAT + MARK SEEN
+  // FETCH SINGLE CHAT + MARK SEEN
   const openChat = async (chatId) => {
     setSelectedChat(chatId)
 
@@ -26,7 +26,7 @@ export default function MessagesPage() {
 
     setMessages(data.messages || [])
 
-    // 🔥 MARK AS SEEN
+    // MARK AS SEEN
     await fetch("/api/chat/seen", {
       method: "POST",
       headers: {
@@ -39,7 +39,6 @@ export default function MessagesPage() {
   useEffect(() => {
     fetchChats()
 
-    // 🔥 AUTO REFRESH SELECTED CHAT (REAL-TIME FEEL)
     const interval = setInterval(() => {
       if (selectedChat) openChat(selectedChat)
     }, 3000)
@@ -47,7 +46,7 @@ export default function MessagesPage() {
     return () => clearInterval(interval)
   }, [selectedChat])
 
-  // ✅ SEND REPLY
+  // SEND REPLY
   const sendReply = async () => {
     if (!reply.trim() || !selectedChat) return
 
@@ -66,28 +65,36 @@ export default function MessagesPage() {
     openChat(selectedChat)
   }
 
-  // ✅ DELETE CHAT
+  // ✅ FIXED DELETE CHAT
   const deleteChat = async () => {
     if (!selectedChat) return
     if (!confirm("Delete this conversation?")) return
 
-    await fetch("/api/admin/chat/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ chatId: selectedChat })
-    })
+    try {
+      const res = await fetch(`/api/chat/${selectedChat}`, {
+        method: "DELETE",
+      })
 
-    setSelectedChat(null)
-    setMessages([])
-    fetchChats()
+      const data = await res.json()
+
+      if (!res.ok) {
+        console.error(data.error)
+        return
+      }
+
+      setSelectedChat(null)
+      setMessages([])
+      fetchChats()
+
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
     <div className="h-[80vh] flex border rounded-2xl overflow-hidden shadow bg-white">
 
-      {/* 🔥 LEFT SIDEBAR */}
+      {/* LEFT SIDEBAR */}
       <div className="w-1/3 border-r bg-white overflow-y-auto">
 
         <div className="p-4 font-semibold border-b bg-slate-50">
@@ -117,7 +124,7 @@ export default function MessagesPage() {
 
       </div>
 
-      {/* 🔥 RIGHT CHAT WINDOW */}
+      {/* RIGHT CHAT WINDOW */}
       <div className="flex-1 flex flex-col bg-slate-50">
 
         {/* HEADER */}
@@ -127,7 +134,6 @@ export default function MessagesPage() {
             <p className="text-xs text-gray-400">Support conversation</p>
           </div>
 
-          {/* 🔥 DELETE BUTTON */}
           {selectedChat && (
             <button
               onClick={deleteChat}
@@ -164,7 +170,6 @@ export default function MessagesPage() {
               >
                 {msg.message}
 
-                {/* 🕒 TIME */}
                 <div className="text-[10px] mt-1 opacity-70 text-right">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
