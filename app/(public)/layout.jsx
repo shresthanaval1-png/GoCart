@@ -27,10 +27,18 @@ export default function PublicLayout({ children }) {
         dispatch(fetchProducts({}))
     }, [dispatch])
 
-    // ✅ AUTO CREATE USER (no UI change)
+    // ✅ AUTO CREATE USER (FIXED - SAFE FOR PRODUCTION)
     useEffect(() => {
         if (user) {
-            fetch("/api/user")
+            const createUser = async () => {
+                try {
+                    await fetch("/api/user")
+                } catch (error) {
+                    console.log("User sync failed")
+                }
+            }
+
+            createUser()
         }
     }, [user])
 
