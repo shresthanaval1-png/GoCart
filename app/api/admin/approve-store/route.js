@@ -4,7 +4,7 @@ import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 
-// Approve Seller
+// Approve / Reject Seller
 export async function POST(request){
     try {
         const { userId } = getAuth(request)
@@ -14,17 +14,24 @@ export async function POST(request){
             return NextResponse.json({ error: 'not authorized' }, { status: 401 })
         }
 
-        const {storeId, status} = await request.json()
+        const { storeId, status } = await request.json()
 
-        if(status === 'approved'){
+        // ✅ FIX ENUM VALUES
+        if (status === 'approved') {
             await prisma.store.update({
                 where: { id: storeId },
-                data: { status: "approved", isActive: true }
+                data: { 
+                    status: "APPROVED",   // ✅ FIX
+                    isActive: true 
+                }
             })
-        }else if(status === 'rejected'){
-             await prisma.store.update({
+        } 
+        else if (status === 'rejected') {
+            await prisma.store.update({
                 where: { id: storeId },
-                data: { status: "rejected"}
+                data: { 
+                    status: "REJECTED"   // ✅ FIX
+                }
             })
         }
 
@@ -36,7 +43,8 @@ export async function POST(request){
     }
 }
 
-// get all pending and rejected stores
+
+// Get all pending and rejected stores
 export async function GET(request){
     try {
         const { userId } = getAuth(request)
@@ -47,7 +55,11 @@ export async function GET(request){
         }
 
         const stores = await prisma.store.findMany({
-            where: { status: { in: ["pending", "rejected"] }},
+            where: { 
+                status: { 
+                    in: ["PENDING", "REJECTED"]   // ✅ FIX
+                } 
+            },
             include: { user: true }
         })
 

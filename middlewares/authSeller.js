@@ -1,24 +1,33 @@
 import prisma from '@/lib/prisma';
 
-
 const authSeller = async (userId) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            include: { store: true },
-        })
+        if (!userId) return false;
 
-        if(user.store){
-            if(user.store.status === 'approved'){
-                return user.store.id
-            }
-        }else{
-            return false
+        // ✅ PRIMARY: exact match
+        let store = await prisma.store.findUnique({
+            where: { userId }
+        });
+
+        // ✅ FALLBACK (handles old/broken data safely)
+        if (!store) {
+            store = await prisma.store.findFirst({
+                where: { userId },
+                orderBy: { createdAt: "desc" }
+            });
         }
-    } catch (error) {
-        console.error(error)
-        return false
-    }
-}
 
-export default authSeller
+        // ✅ STEP 2: ONLY ADMIN APPROVAL CONTROLS ACCESS
+        if (store?.status === "APPROVED") {
+            return store.id; // ✅ return storeId (no UI break)
+        }
+
+        return false;
+
+    } catch (error) {
+        console.error(error);
+        return false;
+    }
+};
+
+export default authSeller;

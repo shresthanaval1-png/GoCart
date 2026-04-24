@@ -34,40 +34,37 @@ export default function CreateStore() {
     }
 
     const fetchSellerStatus = async () => {
-        const token = await getToken()
         try {
+            const token = await getToken()
+
             const { data } = await axios.get('/api/store/create', {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
-            if (['approved', 'rejected', 'pending'].includes(data.status)) {
+            if (['APPROVED', 'REJECTED', 'PENDING'].includes(data.status)) {
                 setStatus(data.status)
                 setAlreadySubmitted(true)
 
                 switch (data.status) {
-                    case "approved":
+                    case "APPROVED":
                         setMessage("Your store has been approved. Redirecting to your dashboard...")
-                        router.replace("/store") // ✅ instant redirect
-                        break;
-
-                    case "rejected":
+                        break
+                    case "REJECTED":
                         setMessage("Your store request has been rejected, contact the admin for more details")
-                        break;
-
-                    case "pending":
+                        break
+                    case "PENDING":
                         setMessage("Your store request is pending, please wait for admin to approve your store")
-                        break;
-
-                    default:
-                        break;
+                        break
                 }
             } else {
                 setAlreadySubmitted(false)
             }
+
         } catch (error) {
             toast.error(error?.response?.data?.error || error.message)
+        } finally {
+            setLoading(false)
         }
-        setLoading(false)
     }
 
     const onSubmitHandler = async (e) => {
@@ -89,11 +86,17 @@ export default function CreateStore() {
             formData.append("address", storeInfo.address)
             formData.append("image", storeInfo.image)
 
-            const { data } = await axios.post('/api/store/create', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+            await toast.promise(
+                axios.post('/api/store/create', formData, {
+                    headers: { Authorization: `Bearer ${token}` }
+                }),
+                {
+                    loading: "Submitting data...",
+                    success: "Store submitted successfully!",
+                    error: "Submission failed"
+                }
+            )
 
-            toast.success(data.message)
             await fetchSellerStatus()
 
         } catch (error) {
@@ -104,8 +107,17 @@ export default function CreateStore() {
     useEffect(() => {
         if (user) {
             fetchSellerStatus()
+        } else {
+            setLoading(false)
         }
     }, [user])
+
+    // ✅ FINAL SIMPLE REDIRECT (ONLY PLACE)
+    useEffect(() => {
+        if (!loading && status === "APPROVED") {
+            router.replace("/store")
+        }
+    }, [status, loading, router])
 
     if (!user) {
         return (
@@ -122,7 +134,7 @@ export default function CreateStore() {
             {!alreadySubmitted ? (
                 <div className="mx-6 min-h-[70vh] my-16">
                     <form
-                        onSubmit={e => toast.promise(onSubmitHandler(e), { loading: "Submitting data..." })}
+                        onSubmit={onSubmitHandler}
                         className="max-w-7xl mx-auto flex flex-col items-start gap-3 text-slate-500"
                     >
 
@@ -170,7 +182,7 @@ export default function CreateStore() {
                         <p>Address</p>
                         <textarea name="address" onChange={onChangeHandler} value={storeInfo.address} rows={5} className="input" />
 
-                        <button className="bg-slate-800 text-white px-12 py-2 rounded mt-10 mb-40">
+                        <button type="submit" className="bg-slate-800 text-white px-12 py-2 rounded mt-10 mb-40">
                             Submit
                         </button>
 

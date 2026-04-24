@@ -1,4 +1,5 @@
 'use client'
+
 import { PackageIcon, Search, ShoppingCart, User, Heart } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -22,6 +23,7 @@ const Navbar = () => {
 
     const [isSeller, setIsSeller] = useState(false)
 
+    // ✅ FIXED SELLER CHECK (ONLY CHANGE)
     useEffect(() => {
         const checkSeller = async () => {
             if (!user) return
@@ -29,16 +31,16 @@ const Navbar = () => {
             try {
                 const token = await getToken()
 
-                const { data } = await axios.get('/api/store/create', {
+                const { data } = await axios.get('/api/store/is-seller', {
                     headers: { Authorization: `Bearer ${token}` }
                 })
 
-                if (data.status === "approved") {
-                    setIsSeller(true)
-                }
+                // ✅ use backend boolean directly
+                setIsSeller(data.isSeller)
 
             } catch (error) {
                 console.log(error)
+                setIsSeller(false)
             }
         }
 
@@ -98,7 +100,7 @@ const Navbar = () => {
                             <span>My Orders</span>
                         </Link>
 
-                        {/* ❤️ WISHLIST (NEW) */}
+                        {/* ❤️ WISHLIST */}
                         <Link href="/wishlist" className="relative flex items-center gap-1">
                             <Heart size={18} />
                             <span>Wishlist</span>
@@ -153,7 +155,6 @@ const Navbar = () => {
                             <PackageIcon size={20} />
                         </Link>
 
-                        {/* ❤️ MOBILE WISHLIST */}
                         <Link href="/wishlist" className="relative">
                             <Heart size={20} />
                             {wishlistCount > 0 && (

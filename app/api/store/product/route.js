@@ -5,12 +5,14 @@ import authSeller from "@/middlewares/authSeller"
 import { getAuth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 
-// GET
+
+// ✅ GET PRODUCTS
 export async function GET(request) {
   try {
     const { userId } = getAuth(request)
     const storeId = await authSeller(userId)
 
+    // ✅ FIX: prevent invalid storeId
     if (!storeId) {
       return NextResponse.json({ error: "not authorized" }, { status: 401 })
     }
@@ -25,7 +27,8 @@ export async function GET(request) {
   }
 }
 
-// POST
+
+// ✅ CREATE PRODUCT
 export async function POST(request) {
   try {
     const { userId } = getAuth(request)
@@ -76,7 +79,6 @@ export async function POST(request) {
     const uploadRes = await res.json()
 
     if (!res.ok) {
-      console.error(uploadRes)
       return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
     }
 
@@ -98,15 +100,12 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("PRODUCT CREATE ERROR:", error)
-
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }
 
-// DELETE
+
+// ✅ DELETE PRODUCT
 export async function DELETE(request) {
   try {
     const { userId } = getAuth(request)
@@ -123,6 +122,19 @@ export async function DELETE(request) {
       return NextResponse.json({ error: "Product ID required" }, { status: 400 })
     }
 
+    // ✅ safety: ensure product belongs to seller
+    const product = await prisma.product.findFirst({
+      where: { id, storeId }
+    })
+
+    if (!product) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    await prisma.orderItem.deleteMany({
+      where: { productId: id }
+    })
+
     await prisma.product.delete({
       where: { id }
     })
@@ -134,7 +146,8 @@ export async function DELETE(request) {
   }
 }
 
-// PUT
+
+// ✅ UPDATE PRODUCT
 export async function PUT(request) {
   try {
     const { userId } = getAuth(request)
@@ -189,7 +202,6 @@ export async function PUT(request) {
       const uploadRes = await res.json()
 
       if (!res.ok) {
-        console.error(uploadRes)
         return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
       }
 

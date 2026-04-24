@@ -14,20 +14,17 @@ export async function POST(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    let user = await prisma.user.findUnique({
+    // ✅ Always sync user (PERMANENT FIX)
+    await prisma.user.upsert({
       where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        name: "User",
+        email: "user@gmail.com",
+        image: "",
+      },
     })
-
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          id: userId,
-          name: "User",
-          email: "user@gmail.com",
-          image: "",
-        },
-      })
-    }
 
     const formData = await request.formData()
 
@@ -43,14 +40,16 @@ export async function POST(request) {
       return NextResponse.json({ error: "Missing store info" }, { status: 400 })
     }
 
-    const existingStore = await prisma.store.findFirst({
-      where: { userId },
+    // ✅ Prevent duplicate store
+    const existingStore = await prisma.store.findUnique({
+      where: { userId }
     })
 
     if (existingStore) {
       return NextResponse.json({ status: existingStore.status })
     }
 
+    // ✅ Username uniqueness
     const isUsernameTaken = await prisma.store.findFirst({
       where: { username: username.toLowerCase() },
     })
@@ -80,19 +79,32 @@ export async function POST(request) {
       })
     }
 
-    await prisma.store.create({
-      data: {
-        userId,
-        name,
-        description,
-        username: username.toLowerCase(),
-        email,
-        contact,
-        address,
-        logo: optimizedImage,
-        status: "approved"
-      },
-    })
+    // ✅ SAFE CREATE (STEP 4: ADMIN APPROVAL CONTROLS ACCESS)
+    try {
+      await prisma.store.create({
+        data: {
+          userId,
+          name,
+          description,
+          username: username.toLowerCase(),
+          email,
+          contact,
+          address,
+          logo: optimizedImage,
+          status: "PENDING",   // ✅ stays (admin will approve)
+          isActive: false      // ✅ no longer used for access
+        },
+      })
+    } catch (err) {
+      if (err.code === "P2002") {
+        const existing = await prisma.store.findUnique({
+          where: { userId }
+        })
+
+        return NextResponse.json({ status: existing?.status || "PENDING" })
+      }
+      throw err
+    }
 
     return NextResponse.json({
       message: "Store created successfully",
@@ -108,7 +120,8 @@ export async function POST(request) {
   }
 }
 
-// GET STORE STATUS (FIXES 405)
+
+// GET STORE STATUS
 export async function GET(request) {
   try {
     const { userId } = getAuth(request)
@@ -117,8 +130,8 @@ export async function GET(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const store = await prisma.store.findFirst({
-      where: { userId },
+    const store = await prisma.store.findUnique({
+      where: { userId }
     })
 
     if (store) {

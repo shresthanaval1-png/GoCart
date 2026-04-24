@@ -2,22 +2,35 @@ import prisma from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-
 // Update user cart 
 export async function POST(request){
     try {
         const { userId } = getAuth(request)
-        const { cart } = await request.json()
+
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        // ✅ SAFE JSON PARSE (FIX)
+        let body = {}
+        try {
+            body = await request.json()
+        } catch (e) {
+            body = {}
+        }
+
+        const { cart } = body
 
         // Save the cart to the user object
         await prisma.user.update({
-            where: {id: userId},
-            data: {cart: cart}
+            where: { id: userId },
+            data: { cart: cart || {} } // ✅ fallback safety
         })
 
         return NextResponse.json({ message: 'Cart updated' })
+
     } catch (error) {
-        console.error(error);
+        console.error(error)
         return NextResponse.json({ error: error.message }, { status: 400 })
     }
 }
@@ -26,14 +39,19 @@ export async function POST(request){
 export async function GET(request){
     try {
         const { userId } = getAuth(request)
+
+        if (!userId) {
+            return NextResponse.json({ cart: {} }) // ✅ safe fallback
+        }
         
         const user = await prisma.user.findUnique({
-            where: {id: userId}
+            where: { id: userId }
         })
 
-        return NextResponse.json({ cart: user.cart })
+        return NextResponse.json({ cart: user?.cart || {} }) // ✅ safe fallback
+
     } catch (error) {
-        console.error(error);
+        console.error(error)
         return NextResponse.json({ error: error.message }, { status: 400 })
     }
 }
