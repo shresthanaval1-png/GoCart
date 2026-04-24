@@ -1,56 +1,55 @@
-'use client'
+"use client";
 
-import { PackageIcon, Search, ShoppingCart, User, Heart } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
-import { useSelector } from "react-redux"
-import { useUser, useClerk, UserButton, useAuth } from "@clerk/nextjs"
-import axios from "axios"
+import { PackageIcon, Search, ShoppingCart, User, Heart } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useUser, useClerk, UserButton, useAuth } from "@clerk/nextjs";
+import axios from "axios";
 
 const Navbar = () => {
 
-    const { user } = useUser()
-    const { openSignIn } = useClerk()
-    const { getToken } = useAuth()
-    const router = useRouter()
+    const { user } = useUser();
+    const { openSignIn } = useClerk();
+    const { getToken } = useAuth();
+    const router = useRouter();
 
-    const [search, setSearch] = useState('')
-    const cartCount = useSelector(state => state.cart.total)
+    const [search, setSearch] = useState('');
+    const cartCount = useSelector(state => state.cart.total);
 
     // ✅ WISHLIST COUNT
-    const wishlistCount = useSelector(state => state.user.wishlist.length)
+    const wishlistCount = useSelector(state => state.user.wishlist.length);
 
-    const [isSeller, setIsSeller] = useState(false)
+    const [isSeller, setIsSeller] = useState(false);
 
-    // ✅ FIXED SELLER CHECK (ONLY CHANGE)
+    // ✅ FINAL FIX (safe + stable)
     useEffect(() => {
         const checkSeller = async () => {
-            if (!user) return
+            if (!user) return;
 
             try {
-                const token = await getToken()
+                const token = await getToken();
 
                 const { data } = await axios.get('/api/store/is-seller', {
                     headers: { Authorization: `Bearer ${token}` }
-                })
+                });
 
-                // ✅ use backend boolean directly
-                setIsSeller(data.isSeller)
+                setIsSeller(data.isSeller);
 
             } catch (error) {
-                console.log(error)
-                setIsSeller(false)
+                console.log(error);
+                setIsSeller(false);
             }
-        }
+        };
 
-        checkSeller()
-    }, [user])
+        checkSeller();
+    }, [user, getToken]); // ✅ IMPORTANT FIX (added getToken)
 
     const handleSearch = (e) => {
-        e.preventDefault()
-        router.push(`/shop?search=${search}`)
-    }
+        e.preventDefault();
+        router.push(`/shop?search=${search}`);
+    };
 
     return (
         <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm">
@@ -100,7 +99,7 @@ const Navbar = () => {
                             <span>My Orders</span>
                         </Link>
 
-                        {/* ❤️ WISHLIST */}
+                        {/* WISHLIST */}
                         <Link href="/wishlist" className="relative flex items-center gap-1">
                             <Heart size={18} />
                             <span>Wishlist</span>
@@ -118,7 +117,7 @@ const Navbar = () => {
                             <span>Account</span>
                         </Link>
 
-                        {/* SELLER */}
+                        {/* SELLER DASHBOARD */}
                         {isSeller && (
                             <button
                                 onClick={() => router.push('/store')}
@@ -180,7 +179,7 @@ const Navbar = () => {
                 </div>
             </div>
         </nav>
-    )
-}
+    );
+};
 
-export default Navbar
+export default Navbar;
