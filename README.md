@@ -1,128 +1,157 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🛒 GoCart – Full Stack E-commerce Platform
 
-## Getting Started
+GoCart is a full-stack e-commerce web application built with modern technologies like **Next.js, Prisma, Clerk, and PostgreSQL**.
+It allows users to browse products, add items to cart, and sellers to manage stores and products.
 
-First, install the dependencies:
+---
+
+## 🚀 Features
+
+### 👤 User Features
+
+* Browse products by category
+* Search products
+* View product details with multiple images
+* Add to cart & manage cart
+* Wishlist functionality
+* User authentication (Clerk)
+
+### 🏪 Seller Features
+
+* Create store (admin approval system)
+* Add, edit, delete products
+* Upload multiple product images
+* Manage product listings
+* Seller dashboard (orders, earnings, products)
+
+### 🛠️ Admin / System Features
+
+* Store approval system
+* Secure APIs
+* Image upload via ImageKit
+* Background jobs (Inngest)
+
+---
+
+## 🧱 Tech Stack
+
+* **Frontend:** Next.js (App Router), React, Tailwind CSS
+* **Backend:** Next.js API Routes
+* **Database:** PostgreSQL (Neon)
+* **ORM:** Prisma
+* **Authentication:** Clerk
+* **Image Upload:** ImageKit
+* **State Management:** Redux Toolkit
+* **Background Jobs:** Inngest
+
+---
+
+## 📂 Project Structure
+
+```
+app/
+ ├── (public)        # User-facing pages
+ ├── store           # Seller dashboard
+ ├── api             # Backend routes
+components/          # UI components
+lib/                 # Redux + utilities
+prisma/              # Database schema
+```
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the root:
+
+```env
+DATABASE_URL=your_database_url
+
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
+CLERK_SECRET_KEY=your_clerk_secret
+
+IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
+NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=your_url_endpoint
+```
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/your-username/gocart.git
+cd gocart
+```
+
+### 2. Install dependencies
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
 ```
 
-Then, run the development server:
+### 3. Setup database
+
+```bash
+npx prisma db push
+```
+
+### 4. Run development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🌐 Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+You can deploy easily using **Vercel**:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-2e0aaae1b6195c2367325f4f02e2d04e9abb55f0b24a779b69b11b9e10269abc.svg)](https://classroom.github.com/online_ide?assignment_repo_id=22306481&assignment_repo_type=AssignmentRepo)
-# Project Name: [Management System]
-### Team ID: [ Group-06]
-
-## 🏢 Corporate Simulation Guidelines
-**Approved by:** Prof. Anushrav Mudgal
-**Objective:** To develop a production-grade software solution using industry-standard DevOps and Agile methodologies.
+1. Push code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy 🚀
 
 ---
 
-## 👥 The Team
-| Role | Name | GitHub Username | Primary Responsibility |
-| :--- | :--- | :--- | :--- |
-| **Team Lead** | [Name] | [@user] | Architecture & Merge Approvals |
-| **Developer** | [Name] | [@user] | Backend / API |
-| **Developer** | [Name] | [@user] | Frontend / UI |
-| **Developer** | [Name] | [@user] | Database & Testing |
-| **DevOps** | [Name] | [@user] | CI/CD & Documentation |
+## 🧪 Key Fixes Implemented
+
+* ✅ Multi-image upload for products
+* ✅ Seller approval-based dashboard access
+* ✅ Category normalization
+* ✅ Fixed Prisma schema issues
+* ✅ Improved API validation & error handling
 
 ---
 
-## 🛠 Project Management (The "Top View")
-We use **GitHub Projects** for task tracking.
-* **The Golden Rule:** *If a task is not on the Board, it does not exist.*
-* **Columns:**
-    1.  **Backlog:** All intended features.
-    2.  **Todo:** Tasks selected for the current sprint.
-    3.  **In Progress:** Currently being coded.
-    4.  **In Review:** PR is open and waiting for peer review.
-    5.  **Done:** Merged into `main` and tested.
+## 📸 Screenshots
+
+(Add your screenshots here)
 
 ---
 
-## ⚙️ Development Workflow (Git Flow)
-We strictly follow **Branch Protection Rules**. Direct pushes to `main` are **FORBIDDEN**.
+## 🤝 Contributing
 
-### 1. Branching Strategy
-* `main`: Production-ready code. (Protected: No direct commits).
-* `dev`: Integration branch. All features merge here first.
-* `feature/feature-name`: Working branch for a specific task.
-    * *Example:* `feature/login-page`, `fix/database-connection`
-
-### 2. The Cycle
-1.  **Pull** latest changes: `git pull origin main`
-2.  **Create** a branch: `git checkout -b feature/my-new-feature`
-3.  **Code** & Commit: `git commit -m "Added login validation logic"`
-4.  **Push**: `git push origin feature/my-new-feature`
-5.  **Open Pull Request (PR):**
-    * Go to GitHub.
-    * Open PR from `feature/...` to `main` (or `dev`).
-    * **Review Requirement:** At least 1 other team member MUST review the code and approve it.
-    * **Faculty Review:** Tag @[Your-GitHub-Username] for major architectural changes.
+Contributions are welcome!
+Feel free to fork the repo and submit a pull request.
 
 ---
 
-## 📝 Coding Standards
-* **Commits:** Must be descriptive.
-    * ❌ Bad: "Fixed stuff"
-    * ✅ Good: "Refactored UserAuthService to handle JWT tokens"
-* **Formatting:** Code must be indented and commented.
-* **Cleanliness:** No commented-out dead code. No hardcoded passwords/API keys (Use `.env` files).
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ---
 
-## 📊 Evaluation & Attendance
-Grading is based on **Digital Footprint** in this repository.
-1.  **Contributions:** The "Insights -> Contributors" graph will be used to verify individual effort.
-2.  **Consistency:** Regular commits are required. Dumping code 1 day before the deadline results in a penalty.
-3.  **Collaboration:** Evidence of Code Reviews (comments on PRs) counts towards the "Teamwork" grade.
+## 👨‍💻 Author
+
+Built by Tech Titans
 
 ---
 
-## 🚀 Setup Instructions
-1.  Clone the repo.
-2.  Run `[command to install dependencies]` (e.g., `npm install` or `mvn clean install`).
-3.  Configure `.env` file (see `.env.example`).
-4.  Run the application: `[command to run app]`.
->>>>>>> 9927f3cb9e23f5ac964f9e858115a2afc512481e
+## ⭐ Support
+
+If you like this project, give it a ⭐ on GitHub!

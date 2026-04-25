@@ -30,8 +30,11 @@ function ShopContent() {
   const rating = Number(searchParams.get('rating')) || 0
   const type = searchParams.get('type') || ''
 
-  // ✅ CATEGORY NORMALIZATION (FIXED)
   const normalizeCategory = (cat) => {
+    if (!cat) return ""
+
+    const cleaned = cat.toLowerCase().trim()
+
     const map = {
       speaker: "speakers",
       speakers: "speakers",
@@ -39,23 +42,41 @@ function ShopContent() {
       sport: "sports & outdoors",
       sports: "sports & outdoors",
       "sports & outdoors": "sports & outdoors",
+      "sports outdoors": "sports & outdoors",
 
       toy: "toys & games",
       toys: "toys & games",
       "toys and games": "toys & games",
       "toys & games": "toys & games",
+      "toys games": "toys & games",
 
       watch: "watch",
       decoration: "decoration",
-    };
+      electronics: "electronics",
+      fashion: "fashion",
+      books: "books",
+      beauty: "beauty",
+      mouse: "mouse"
+    }
 
-    return map[cat?.toLowerCase().trim()] || cat?.toLowerCase().trim();
-  };
+    return map[cleaned] || cleaned
+  }
+
+  const toUrlFormat = (cat) =>
+    cat.replace(/ & /g, "-").replace(/\s+/g, "-").toLowerCase()
 
   const selectedCategories = searchParams.get('category')
     ? searchParams.get('category')
         .split(',')
-        .map(c => normalizeCategory(c))
+        .map(c => {
+          const restored = c
+            .replace(/-/g, " ")
+            .replace("sports outdoors", "sports & outdoors")
+            .replace("toys games", "toys & games")
+
+          return normalizeCategory(restored)
+        })
+        .filter(Boolean)
     : []
 
   const fallbackCategories = ["speakers", "watch", "decoration"]
@@ -87,15 +108,19 @@ function ShopContent() {
   }
 
   const toggleCategory = (cat) => {
-    let updated = [...selectedCategories]
+    const safeCat = toUrlFormat(cat)
 
-    if (updated.includes(cat)) {
-      updated = updated.filter(c => c !== cat)
+    let current = searchParams.get('category')
+      ? searchParams.get('category').split(',')
+      : []
+
+    if (current.includes(safeCat)) {
+      current = current.filter(c => c !== safeCat)
     } else {
-      updated.push(cat)
+      current.push(safeCat)
     }
 
-    updateParam("category", updated.join(','))
+    updateParam("category", current.join(','))
   }
 
   const resetFilters = () => {
@@ -126,16 +151,21 @@ function ShopContent() {
     filteredProducts = filteredProducts.filter(p => p.mrp > p.price)
   }
 
-  // 📂 CATEGORY (FIXED)
+  // ✅ FINAL FIXED CATEGORY FILTER (IMPORTANT)
   if (selectedCategories.length > 0) {
     filteredProducts = filteredProducts.filter(p => {
-      const cats = p.categories
-        ? p.categories.map(normalizeCategory)
-        : p.category
-        ? [normalizeCategory(p.category)]
+
+      const single = normalizeCategory(p.category)
+
+      const multiple = Array.isArray(p.categories)
+        ? p.categories.map(c => normalizeCategory(c))
         : []
 
-      return cats.some(c => selectedCategories.includes(c))
+      const allCategories = [...multiple, single].filter(Boolean)
+
+      return selectedCategories.some(sel =>
+        allCategories.includes(sel)
+      )
     })
   }
 
@@ -156,13 +186,10 @@ function ShopContent() {
   if (sort === "low") filteredProducts.sort((a, b) => a.price - b.price)
   if (sort === "high") filteredProducts.sort((a, b) => b.price - a.price)
 
-  const [ratingOpen, setRatingOpen] = useState(false)
-
   return (
     <div className="min-h-[70vh] px-6">
       <div className="max-w-7xl mx-auto">
 
-        {/* TYPE FILTER */}
         <div className="flex gap-3 mb-3">
           <button
             onClick={() => updateParam("type", "")}
@@ -195,7 +222,6 @@ function ShopContent() {
           </button>
         </div>
 
-        {/* CATEGORY CHIPS */}
         <div className="flex gap-3 overflow-x-auto pb-3 mb-4">
           {categories.map((cat, i) => {
             const Icon = categoryIcons[cat] || Package
@@ -210,13 +236,14 @@ function ShopContent() {
                 `}
               >
                 <Icon size={14} />
-                <span className="text-sm capitalize">{cat}</span>
+                <span className="text-sm capitalize">
+                  {cat.replace(/-/g, " ")}
+                </span>
               </div>
             )
           })}
         </div>
 
-        {/* PRODUCTS */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
 
           {loading ? (
