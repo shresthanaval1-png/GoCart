@@ -1,0 +1,59 @@
+name: Universal Multi-Stack CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # --- JAVA (Backend Folder) ---
+      - name: Set up JDK 17
+        if: hashFiles('backend/pom.xml') != ''
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Java Backend
+        if: hashFiles('backend/pom.xml') != ''
+        run: mvn -B package --file backend/pom.xml
+
+      # --- NODE.JS (Frontend or Backend Folder) ---
+      - name: Set up Node.js
+        if: hashFiles('frontend/package.json') != '' || hashFiles('backend/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install & Test Frontend
+        if: hashFiles('frontend/package.json') != ''
+        working-directory: ./frontend
+        run: |
+          npm install
+          npm test --if-present
+
+      - name: Install & Test Node Backend
+        if: hashFiles('backend/package.json') != ''
+        working-directory: ./backend
+        run: |
+          npm install
+          npm test --if-present
+
+      # --- PHP (Backend Folder) ---
+      - name: Setup PHP
+        if: hashFiles('backend/**/*.php') != ''
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Check PHP Syntax (Backend)
+        if: hashFiles('backend/**/*.php') != ''
+        run: find backend/ -name "*.php" -exec php -l {} \;
