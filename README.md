@@ -1,88 +1,65 @@
-# 🛒 GoCart – Full Stack E-commerce Platform
+# 🛒 GoCart - Full Stack E-commerce Application
 
-GoCart is a full-stack e-commerce web application built with modern technologies like **Next.js, Prisma, Clerk, and PostgreSQL**.
-It allows users to browse products, add items to cart, and sellers to manage stores and products.
+## 👥 Group: Tech Titans
+
+### 👨‍💻 Team Members
+
+* Pranjal Gupta
+* Prashidha Kumar Baniya
+* Nawal Shrestha
+* Joy Clarence Md Nurenajar
+
+---
+
+## 📌 Project Overview
+
+GoCart is a full-stack e-commerce web application built using modern technologies. It allows users to browse products, filter by categories, add items to cart, and place orders. Sellers can manage their store, add products, and track inventory.
 
 ---
 
 ## 🚀 Features
 
-### 👤 User Features
-
-* Browse products by category
-* Search products
-* View product details with multiple images
-* Add to cart & manage cart
-* Wishlist functionality
-* User authentication (Clerk)
-
-### 🏪 Seller Features
-
-* Create store (admin approval system)
-* Add, edit, delete products
-* Upload multiple product images
-* Manage product listings
-* Seller dashboard (orders, earnings, products)
-
-### 🛠️ Admin / System Features
-
-* Store approval system
-* Secure APIs
-* Image upload via ImageKit
-* Background jobs (Inngest)
+* 🔐 Authentication (Clerk)
+* 🛍️ Product listing & filtering
+* 📂 Category-based filtering
+* ⭐ Rating system
+* 🛒 Cart management
+* 📦 Order handling
+* 🏪 Seller dashboard
+* 🖼️ Multiple product image upload
+* ⚡ Fast UI with Next.js
 
 ---
 
-## 🧱 Tech Stack
+## 🛠️ Tech Stack
 
-* **Frontend:** Next.js (App Router), React, Tailwind CSS
+* **Frontend:** Next.js, React, Tailwind CSS
 * **Backend:** Next.js API Routes
 * **Database:** PostgreSQL (Neon)
 * **ORM:** Prisma
 * **Authentication:** Clerk
-* **Image Upload:** ImageKit
-* **State Management:** Redux Toolkit
-* **Background Jobs:** Inngest
 
 ---
 
-## 📂 Project Structure
+## 📂 Folder Structure
 
 ```
 app/
- ├── (public)        # User-facing pages
- ├── store           # Seller dashboard
- ├── api             # Backend routes
-components/          # UI components
-lib/                 # Redux + utilities
-prisma/              # Database schema
+components/
+lib/
+prisma/
+public/
+scripts/
 ```
 
 ---
 
-## ⚙️ Environment Variables
+## ⚙️ Installation & Setup
 
-Create a `.env` file in the root:
-
-```env
-DATABASE_URL=your_database_url
-
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_key
-CLERK_SECRET_KEY=your_clerk_secret
-
-IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
-NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
-NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT=your_url_endpoint
-```
-
----
-
-## 🛠️ Installation & Setup
-
-### 1. Clone the repo
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/gocart.git
+git clone <your-repo-link>
 cd gocart
 ```
 
@@ -92,13 +69,17 @@ cd gocart
 npm install
 ```
 
-### 3. Setup database
+### 3. Setup environment variables
 
-```bash
-npx prisma db push
+Create a `.env` file and add:
+
+```
+DATABASE_URL=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 ```
 
-### 4. Run development server
+### 4. Run the project
 
 ```bash
 npm run dev
@@ -108,50 +89,27 @@ npm run dev
 
 ## 🌐 Deployment
 
-You can deploy easily using **Vercel**:
+You can deploy this project using:
 
-1. Push code to GitHub
-2. Import project in Vercel
-3. Add environment variables
-4. Deploy 🚀
+* Vercel (recommended)
+* Netlify
 
 ---
 
-## 🧪 Key Fixes Implemented
+## 📌 Notes
 
-* ✅ Multi-image upload for products
-* ✅ Seller approval-based dashboard access
-* ✅ Category normalization
-* ✅ Fixed Prisma schema issues
-* ✅ Improved API validation & error handling
-
----
-
-## 📸 Screenshots
-
-(Add your screenshots here)
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome!
-Feel free to fork the repo and submit a pull request.
+* Ensure database is connected properly
+* Run Prisma migrations before starting
+* Add default images in `/public`
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is for educational purposes.
 
 ---
 
-## 👨‍💻 Author
+## 🙌 Acknowledgements
 
-Built by Tech Titans
-
----
-
-## ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub!
+Special thanks to all team members of **Tech Titans** for their contribution to this project.
