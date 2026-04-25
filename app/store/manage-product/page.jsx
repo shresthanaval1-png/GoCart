@@ -52,7 +52,7 @@ export default function StoreManageProducts() {
         }
     }
 
-    // ✅ UPDATE
+    // ✅ UPDATE (FIXED MULTI IMAGE)
     const updateProduct = async () => {
         try {
             const token = await getToken()
@@ -66,8 +66,11 @@ export default function StoreManageProducts() {
             formData.append("mrp", editData.mrp)
             formData.append("category", editData.category)
 
-            if (editData.newImage) {
-                formData.append("image", editData.newImage)
+            // ✅ FIX: MULTIPLE IMAGES
+            if (editData.newImages && editData.newImages.length > 0) {
+                editData.newImages.forEach((file) => {
+                    formData.append("images", file)
+                })
             }
 
             await axios.put('/api/store/product', formData, {
@@ -137,7 +140,6 @@ export default function StoreManageProducts() {
                                 <h3 className="font-semibold">{product.name}</h3>
                                 <p className="text-sm text-gray-500">{product.category}</p>
 
-                                {/* BADGES */}
                                 <div className="flex gap-2 mt-1">
                                     {product.inStock ? (
                                         <span className="text-xs bg-green-100 px-2 rounded">In Stock</span>
@@ -209,21 +211,27 @@ export default function StoreManageProducts() {
                             <option value="decoration">Decoration</option>
                         </select>
 
-                        {/* IMAGE */}
+                        {/* ✅ MULTIPLE IMAGE INPUT */}
                         <input
                             type="file"
-                            onChange={(e)=>setEditData({...editData, newImage: e.target.files[0]})}
+                            multiple
+                            onChange={(e)=>setEditData({
+                                ...editData,
+                                newImages: Array.from(e.target.files)
+                            })}
                         />
 
-                        {editData.newImage && (
+                        {/* PREVIEW */}
+                        {editData.newImages && editData.newImages.map((img, i) => (
                             <Image
-                                src={URL.createObjectURL(editData.newImage)}
+                                key={i}
+                                src={URL.createObjectURL(img)}
                                 width={80}
                                 height={80}
                                 alt=""
-                                className="mt-2"
+                                className="mt-2 inline-block mr-2"
                             />
-                        )}
+                        ))}
 
                         {/* ACTIONS */}
                         <div className="flex justify-end gap-3 mt-4">

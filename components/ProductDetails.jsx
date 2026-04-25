@@ -4,7 +4,7 @@ import { addToCart, increaseQty, decreaseQty } from "@/lib/features/cart/cartSli
 import { addToWishlist, removeFromWishlist } from "@/lib/features/user/userSlice";
 import { StarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -15,17 +15,24 @@ const ProductDetails = ({ product }) => {
 
     const cart = useSelector(state => state.cart.cartItems);
 
-    // ✅ SAFE WISHLIST (FIXED)
+    // ✅ SAFE WISHLIST
     const wishlist = useSelector(state => state.user?.wishlist || []);
 
     const dispatch = useDispatch();
     const router = useRouter();
 
-    const [mainImage, setMainImage] = useState(product?.images?.[0] || "/placeholder.png");
+    // ✅ FIX: initialize safely
+    const [mainImage, setMainImage] = useState("/placeholder.png");
+
+    // ✅ FIX: sync when product changes (IMPORTANT)
+    useEffect(() => {
+        if (product?.images?.length > 0) {
+            setMainImage(product.images[0]);
+        }
+    }, [product]);
 
     const cartItem = cart[productId];
 
-    // ✅ SAFE CHECK
     const isWishlisted = wishlist.includes(productId);
 
     const addToCartHandler = () => {
@@ -37,7 +44,6 @@ const ProductDetails = ({ product }) => {
         router.push("/cart");
     };
 
-    // ✅ TOGGLE WISHLIST
     const handleWishlist = () => {
         if (isWishlisted) {
             dispatch(removeFromWishlist(productId));
@@ -56,6 +62,7 @@ const ProductDetails = ({ product }) => {
             {/* LEFT */}
             <div className="flex gap-4 max-sm:flex-col-reverse">
 
+                {/* 🧩 THUMBNAILS */}
                 <div className="flex md:flex-col gap-3">
                     {product.images?.map((image, index) => (
                         <div
@@ -70,6 +77,7 @@ const ProductDetails = ({ product }) => {
                     ))}
                 </div>
 
+                {/* 🖼️ MAIN IMAGE */}
                 <div className="flex-1 flex items-center justify-center bg-slate-100 rounded-xl p-6">
                     <Image
                         src={mainImage}
@@ -113,7 +121,6 @@ const ProductDetails = ({ product }) => {
 
                     <div className="flex gap-3">
 
-                        {/* QUANTITY OR ADD */}
                         {cartItem ? (
                             <div className="flex items-center border rounded-lg overflow-hidden">
                                 <button
@@ -141,7 +148,6 @@ const ProductDetails = ({ product }) => {
                             </button>
                         )}
 
-                        {/* BUY NOW */}
                         <button
                             onClick={handleBuyNow}
                             className="flex-1 bg-green-600 text-white py-3 rounded-lg"
@@ -151,7 +157,6 @@ const ProductDetails = ({ product }) => {
 
                     </div>
 
-                    {/* ❤️ WISHLIST */}
                     <button
                         onClick={handleWishlist}
                         className={`w-full py-2 rounded-lg border transition ${

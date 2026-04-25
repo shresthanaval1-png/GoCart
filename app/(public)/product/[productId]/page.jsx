@@ -16,6 +16,14 @@ export default function Product() {
 
     const fetchProduct = () => {
         const found = products.find((p) => p.id === productId);
+
+        // ✅ SAFE FIX: ensure images array exists (NO UI CHANGE)
+        if (found) {
+            if (!found.images || found.images.length === 0) {
+                found.images = found.image ? [found.image] : []
+            }
+        }
+
         setProduct(found);
     }
 
@@ -48,7 +56,7 @@ export default function Product() {
                 {/* 🔝 TOP NAV SECTION */}
                 <div className="pt-6 flex flex-col gap-3">
 
-                    {/* 🔙 PREMIUM BACK BUTTON */}
+                    {/* 🔙 BACK BUTTON */}
                     <button
                         onClick={handleBack}
                         className="w-fit flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-black hover:text-white transition-all duration-300 text-sm shadow-sm"

@@ -30,26 +30,51 @@ function ShopContent() {
   const rating = Number(searchParams.get('rating')) || 0
   const type = searchParams.get('type') || ''
 
-  // ✅ FIXED CATEGORY (IMPORTANT)
+  // ✅ CATEGORY NORMALIZATION (FIXED)
+  const normalizeCategory = (cat) => {
+    const map = {
+      speaker: "speakers",
+      speakers: "speakers",
+
+      sport: "sports & outdoors",
+      sports: "sports & outdoors",
+      "sports & outdoors": "sports & outdoors",
+
+      toy: "toys & games",
+      toys: "toys & games",
+      "toys and games": "toys & games",
+      "toys & games": "toys & games",
+
+      watch: "watch",
+      decoration: "decoration",
+    };
+
+    return map[cat?.toLowerCase().trim()] || cat?.toLowerCase().trim();
+  };
+
   const selectedCategories = searchParams.get('category')
     ? searchParams.get('category')
         .split(',')
-        .map(c => c.toLowerCase().trim())
+        .map(c => normalizeCategory(c))
     : []
 
-  const fallbackCategories = ["speaker", "watch", "decoration"]
+  const fallbackCategories = ["speakers", "watch", "decoration"]
 
   const categories = [
     ...new Set([
       ...fallbackCategories,
       ...products.flatMap(p =>
-        p.categories ? p.categories : p.category ? [p.category] : []
+        p.categories
+          ? p.categories.map(normalizeCategory)
+          : p.category
+          ? [normalizeCategory(p.category)]
+          : []
       )
-    ].map(c => c.toLowerCase().trim()))
-  ].filter(c => c !== "earphone" && c !== "toys")
+    ])
+  ]
 
   const categoryIcons = {
-    speaker: Speaker,
+    speakers: Speaker,
     watch: Watch,
     decoration: Gift,
   }
@@ -101,18 +126,16 @@ function ShopContent() {
     filteredProducts = filteredProducts.filter(p => p.mrp > p.price)
   }
 
-  // 📂 CATEGORY (✅ FIXED)
+  // 📂 CATEGORY (FIXED)
   if (selectedCategories.length > 0) {
     filteredProducts = filteredProducts.filter(p => {
       const cats = p.categories
-        ? p.categories
+        ? p.categories.map(normalizeCategory)
         : p.category
-        ? [p.category]
+        ? [normalizeCategory(p.category)]
         : []
 
-      return cats.some(c =>
-        selectedCategories.includes(c.toLowerCase().trim())
-      )
+      return cats.some(c => selectedCategories.includes(c))
     })
   }
 

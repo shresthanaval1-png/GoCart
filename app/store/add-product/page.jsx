@@ -8,7 +8,6 @@ import { toast } from "react-hot-toast"
 
 export default function StoreAddProduct() {
 
-    // ✅ FINAL CATEGORY STRUCTURE (BEST PRACTICE)
     const categories = [
         { value: "headphones", label: "Headphones" },
         { value: "speakers", label: "Speakers" },
@@ -62,8 +61,12 @@ export default function StoreAddProduct() {
             formData.append('price', productInfo.price)
             formData.append('category', productInfo.category)
 
-            // ✅ send single image
-            formData.append('image', images[1])
+            // ✅ FIX: SEND ALL SELECTED IMAGES
+            Object.values(images).forEach((file) => {
+                if (file) {
+                    formData.append('images', file)
+                }
+            })
 
             const token = await getToken()
 
@@ -171,7 +174,6 @@ export default function StoreAddProduct() {
                 />
             </div>
 
-            {/* ✅ FINAL CATEGORY DROPDOWN */}
             <select
                 onChange={e => setProductInfo({ ...productInfo, category: e.target.value })}
                 value={productInfo.category}

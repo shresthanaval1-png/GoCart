@@ -84,7 +84,11 @@ export default function CreateStore() {
             formData.append("email", storeInfo.email)
             formData.append("contact", storeInfo.contact)
             formData.append("address", storeInfo.address)
-            formData.append("image", storeInfo.image)
+
+            // ✅ FIX: send as "images" (array format)
+            if (storeInfo.image) {
+                formData.append("images", storeInfo.image)
+            }
 
             await toast.promise(
                 axios.post('/api/store/create', formData, {
@@ -112,7 +116,6 @@ export default function CreateStore() {
         }
     }, [user])
 
-    // ✅ FINAL SIMPLE REDIRECT (ONLY PLACE)
     useEffect(() => {
         if (!loading && status === "APPROVED") {
             router.replace("/store")

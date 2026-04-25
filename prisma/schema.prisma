@@ -9,7 +9,7 @@ datasource db {
 }
 
 //////////////////////////////////////////////////////
-// ✅ ENUM
+// ENUM
 //////////////////////////////////////////////////////
 
 enum StoreStatus {
@@ -38,7 +38,7 @@ model User {
 }
 
 //////////////////////////////////////////////////////
-// PRODUCT
+// PRODUCT (✅ STEP 3 FIXED)
 //////////////////////////////////////////////////////
 
 model Product {
@@ -48,7 +48,11 @@ model Product {
   mrp         Float
   price       Float
   images      String[]
+
+  // ✅ FIXED (NO ERROR)
   category    String
+  categories  String[] @default([])
+
   inStock     Boolean  @default(true)
   storeId     String
   createdAt   DateTime @default(now())
@@ -57,6 +61,8 @@ model Product {
   store      Store       @relation(fields: [storeId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
   rating     Rating[]
+
+  @@index([category]) // ✅ CORRECT INDEX
 }
 
 //////////////////////////////////////////////////////
@@ -165,7 +171,7 @@ model Coupon {
 }
 
 //////////////////////////////////////////////////////
-// ✅ STORE (FINAL FIX)
+// STORE
 //////////////////////////////////////////////////////
 
 model Store {
@@ -177,8 +183,6 @@ model Store {
   address     String
 
   status      StoreStatus @default(PENDING)
-
-  // ✅ ALWAYS TRUE (YOUR REQUIREMENT)
   isActive    Boolean     @default(true)
 
   logo        String

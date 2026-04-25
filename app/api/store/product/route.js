@@ -1,11 +1,32 @@
 export const dynamic = "force-dynamic";
-
 export const runtime = "nodejs"
 
 import prisma from "@/lib/prisma"
 import authSeller from "@/middlewares/authSeller"
 import { getAuth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
+
+// ✅ CATEGORY NORMALIZER
+const normalizeCategory = (cat) => {
+  const map = {
+    speaker: "Speakers",
+    speakers: "Speakers",
+
+    sport: "Sports & Outdoors",
+    sports: "Sports & Outdoors",
+    "sports & outdoors": "Sports & Outdoors",
+
+    toy: "Toys & Games",
+    toys: "Toys & Games",
+    "toys and games": "Toys & Games",
+    "toys & games": "Toys & Games",
+
+    watch: "Watch",
+    decoration: "Decoration",
+  };
+
+  return map[cat?.toLowerCase().trim()] || cat;
+};
 
 
 // ✅ GET PRODUCTS
@@ -14,7 +35,6 @@ export async function GET(request) {
     const { userId } = getAuth(request)
     const storeId = await authSeller(userId)
 
-    // ✅ FIX: prevent invalid storeId
     if (!storeId) {
       return NextResponse.json({ error: "not authorized" }, { status: 401 })
     }
@@ -30,7 +50,7 @@ export async function GET(request) {
 }
 
 
-// ✅ CREATE PRODUCT
+// ✅ CREATE PRODUCT (FINAL FIXED)
 export async function POST(request) {
   try {
     const { userId } = getAuth(request)
@@ -46,8 +66,15 @@ export async function POST(request) {
     const price = parseFloat(formData.get("price"))
     const mrp = parseFloat(formData.get("mrp"))
     const description = formData.get("description")
-    const category = formData.get("category")
-    const image = formData.get("image")
+
+    const rawCategory = formData.get("category")
+    const category = normalizeCategory(rawCategory)
+
+    // ✅ FIX: SAFE FILE HANDLING
+    let files = formData.getAll("images")
+
+    // 🔥 REMOVE EMPTY FILES (IMPORTANT FIX)
+    files = files.filter(file => file && file.size > 0)
 
     if (!name || !description || !category) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -57,34 +84,39 @@ export async function POST(request) {
       return NextResponse.json({ error: "Invalid price or MRP" }, { status: 400 })
     }
 
-    if (!image || typeof image === "string") {
-      return NextResponse.json({ error: "Image required" }, { status: 400 })
+    if (!files || files.length === 0) {
+      return NextResponse.json({ error: "At least one image required" }, { status: 400 })
     }
 
-    const buffer = Buffer.from(await image.arrayBuffer())
-    const base64File = buffer.toString("base64")
+    const imageUrls = []
 
-    const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-      method: "POST",
-      headers: {
-        Authorization:
-          "Basic " +
-          Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
-      },
-      body: new URLSearchParams({
-        file: `data:${image.type};base64,${base64File}`,
-        fileName: image.name,
-        folder: "products",
-      }),
-    })
+    for (const image of files) {
+      const buffer = Buffer.from(await image.arrayBuffer())
+      const base64File = buffer.toString("base64")
 
-    const uploadRes = await res.json()
+      const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+        method: "POST",
+        headers: {
+          Authorization:
+            "Basic " +
+            Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
+        },
+        body: new URLSearchParams({
+          file: `data:${image.type};base64,${base64File}`,
+          fileName: image.name,
+          folder: "products",
+        }),
+      })
 
-    if (!res.ok) {
-      return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
+      const uploadRes = await res.json()
+
+      if (!res.ok) {
+        console.error(uploadRes)
+        return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
+      }
+
+      imageUrls.push(uploadRes.url)
     }
-
-    const imageUrl = uploadRes.url
 
     await prisma.product.create({
       data: {
@@ -93,7 +125,7 @@ export async function POST(request) {
         mrp,
         description,
         category,
-        images: [imageUrl],
+        images: imageUrls,
         storeId
       }
     })
@@ -107,7 +139,7 @@ export async function POST(request) {
 }
 
 
-// ✅ DELETE PRODUCT
+// ✅ DELETE PRODUCT (UNCHANGED)
 export async function DELETE(request) {
   try {
     const { userId } = getAuth(request)
@@ -124,7 +156,6 @@ export async function DELETE(request) {
       return NextResponse.json({ error: "Product ID required" }, { status: 400 })
     }
 
-    // ✅ safety: ensure product belongs to seller
     const product = await prisma.product.findFirst({
       where: { id, storeId }
     })
@@ -149,7 +180,7 @@ export async function DELETE(request) {
 }
 
 
-// ✅ UPDATE PRODUCT
+// ✅ UPDATE PRODUCT (UNCHANGED LOGIC, SAFE)
 export async function PUT(request) {
   try {
     const { userId } = getAuth(request)
@@ -166,8 +197,12 @@ export async function PUT(request) {
     const price = parseFloat(formData.get("price"))
     const mrp = parseFloat(formData.get("mrp"))
     const description = formData.get("description")
-    const category = formData.get("category")
-    const image = formData.get("image")
+
+    const rawCategory = formData.get("category")
+    const category = normalizeCategory(rawCategory)
+
+    let files = formData.getAll("images")
+    files = files.filter(file => file && file.size > 0)
 
     if (!id) {
       return NextResponse.json({ error: "Missing ID" }, { status: 400 })
@@ -183,31 +218,37 @@ export async function PUT(request) {
 
     let updatedImages = existing.images
 
-    if (image && typeof image !== "string" && image.size > 0) {
-      const buffer = Buffer.from(await image.arrayBuffer())
-      const base64File = buffer.toString("base64")
+    if (files && files.length > 0) {
+      const imageUrls = []
 
-      const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
-        method: "POST",
-        headers: {
-          Authorization:
-            "Basic " +
-            Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
-        },
-        body: new URLSearchParams({
-          file: `data:${image.type};base64,${base64File}`,
-          fileName: image.name,
-          folder: "products",
-        }),
-      })
+      for (const image of files) {
+        const buffer = Buffer.from(await image.arrayBuffer())
+        const base64File = buffer.toString("base64")
 
-      const uploadRes = await res.json()
+        const res = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Basic " +
+              Buffer.from(process.env.IMAGEKIT_PRIVATE_KEY + ":").toString("base64"),
+          },
+          body: new URLSearchParams({
+            file: `data:${image.type};base64,${base64File}`,
+            fileName: image.name,
+            folder: "products",
+          }),
+        })
 
-      if (!res.ok) {
-        return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
+        const uploadRes = await res.json()
+
+        if (!res.ok) {
+          return NextResponse.json({ error: "Image upload failed" }, { status: 500 })
+        }
+
+        imageUrls.push(uploadRes.url)
       }
 
-      updatedImages = [uploadRes.url]
+      updatedImages = imageUrls
     }
 
     await prisma.product.update({
