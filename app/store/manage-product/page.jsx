@@ -20,7 +20,22 @@ export default function StoreManageProducts() {
     const [editModal, setEditModal] = useState(false)
     const [editData, setEditData] = useState({})
 
-    // ✅ FETCH
+    const categories = [
+        { value: "headphones", label: "Headphones" },
+        { value: "speakers", label: "Speakers" },
+        { value: "watch", label: "Watch" },
+        { value: "earbuds", label: "Earbuds" },
+        { value: "mouse", label: "Mouse" },
+        { value: "decoration", label: "Decoration" },
+        { value: "toys & games", label: "Toys & Games" },
+        { value: "sports & outdoors", label: "Sports & Outdoors" },
+        { value: "electronics", label: "Electronics" },
+        { value: "books", label: "Books" },
+        { value: "fashion", label: "Fashion" },
+        { value: "beauty", label: "Beauty" },
+        { value: "others", label: "Others" }
+    ]
+
     const fetchProducts = async () => {
         try {
             const token = await getToken()
@@ -34,7 +49,6 @@ export default function StoreManageProducts() {
         setLoading(false)
     }
 
-    // ✅ DELETE
     const deleteProduct = async (id) => {
         if (!confirm("Delete this product?")) return
 
@@ -52,7 +66,6 @@ export default function StoreManageProducts() {
         }
     }
 
-    // ✅ UPDATE (FIXED MULTI IMAGE)
     const updateProduct = async () => {
         try {
             const token = await getToken()
@@ -63,10 +76,9 @@ export default function StoreManageProducts() {
             formData.append("name", editData.name)
             formData.append("description", editData.description)
             formData.append("price", editData.price)
-            formData.append("mrp", editData.mrp)
+            formData.append("mrp", editData.mrp) // ✅ already correct
             formData.append("category", editData.category)
 
-            // ✅ FIX: MULTIPLE IMAGES
             if (editData.newImages && editData.newImages.length > 0) {
                 editData.newImages.forEach((file) => {
                     formData.append("images", file)
@@ -119,7 +131,6 @@ export default function StoreManageProducts() {
                 </div>
             </div>
 
-            {/* 🔍 SEARCH */}
             <input
                 placeholder="Search products..."
                 value={search}
@@ -127,12 +138,10 @@ export default function StoreManageProducts() {
                 className="border px-4 py-2 rounded mb-5 w-80"
             />
 
-            {/* 📦 PRODUCTS */}
             <div className="bg-white rounded shadow">
                 {filteredProducts.map(product => (
                     <div key={product.id} className="flex justify-between items-center p-4 border-b">
 
-                        {/* LEFT */}
                         <div className="flex gap-4 items-center">
                             <Image src={product.images[0]} width={60} height={60} alt="" />
 
@@ -150,9 +159,19 @@ export default function StoreManageProducts() {
                             </div>
                         </div>
 
-                        {/* RIGHT */}
+                        {/* 💰 PRICE + MRP (NEW) */}
                         <div className="flex items-center gap-6">
-                            <p className="font-semibold">{currency}{product.price}</p>
+                            <div className="flex flex-col">
+                                <span className="font-semibold">
+                                    {currency}{product.price}
+                                </span>
+
+                                {product?.mrp && product.mrp > product.price && (
+                                    <span className="text-sm text-gray-400 line-through">
+                                        {currency}{product.mrp}
+                                    </span>
+                                )}
+                            </div>
 
                             <button
                                 onClick={() => {
@@ -201,17 +220,27 @@ export default function StoreManageProducts() {
                             onChange={(e)=>setEditData({...editData, price: e.target.value})}
                         />
 
+                        {/* ✅ NEW MRP INPUT */}
+                        <input
+                            type="number"
+                            className="border p-2 w-full mb-3"
+                            placeholder="MRP"
+                            value={editData.mrp || ""}
+                            onChange={(e)=>setEditData({...editData, mrp: e.target.value})}
+                        />
+
                         <select
                             className="border p-2 w-full mb-3"
                             value={editData.category}
                             onChange={(e)=>setEditData({...editData, category: e.target.value})}
                         >
-                            <option value="speaker">Speaker</option>
-                            <option value="watch">Watch</option>
-                            <option value="decoration">Decoration</option>
+                            {categories.map(cat => (
+                                <option key={cat.value} value={cat.value}>
+                                    {cat.label}
+                                </option>
+                            ))}
                         </select>
 
-                        {/* ✅ MULTIPLE IMAGE INPUT */}
                         <input
                             type="file"
                             multiple
@@ -221,7 +250,6 @@ export default function StoreManageProducts() {
                             })}
                         />
 
-                        {/* PREVIEW */}
                         {editData.newImages && editData.newImages.map((img, i) => (
                             <Image
                                 key={i}
@@ -233,7 +261,6 @@ export default function StoreManageProducts() {
                             />
                         ))}
 
-                        {/* ACTIONS */}
                         <div className="flex justify-end gap-3 mt-4">
                             <button onClick={()=>setEditModal(false)}>Cancel</button>
                             <button onClick={updateProduct} className="bg-black text-white px-4 py-2 rounded">

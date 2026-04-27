@@ -111,10 +111,29 @@ const ProductDetails = ({ product }) => {
                     </span>
                 </div>
 
-                {/* 💰 PRICE */}
-                <p className="text-2xl font-bold text-indigo-600">
-                    {currency}{product.price}
-                </p>
+                {/* 💰 PRICE (UPDATED - MRP + DISCOUNT) */}
+                <div className="flex items-center gap-3">
+                    
+                    {/* Discounted Price */}
+                    <span className="text-2xl font-bold text-indigo-600">
+                        {currency}{product.price}
+                    </span>
+
+                    {/* Show MRP + Discount only if valid */}
+                    {product?.mrp && product.mrp > product.price && (
+                        <>
+                            {/* MRP */}
+                            <span className="text-lg text-gray-400 line-through">
+                                {currency}{product.mrp}
+                            </span>
+
+                            {/* Discount % */}
+                            <span className="text-sm text-red-500 font-medium">
+                                {Math.round(((product.mrp - product.price) / product.mrp) * 100)}% OFF
+                            </span>
+                        </>
+                    )}
+                </div>
 
                 {/* 🛒 BUTTONS */}
                 <div className="mt-6 flex flex-col gap-3">

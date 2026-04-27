@@ -50,7 +50,7 @@ export async function GET(request) {
 }
 
 
-// ✅ CREATE PRODUCT (FINAL FIXED)
+// ✅ CREATE PRODUCT (FINAL SAFE VERSION)
 export async function POST(request) {
   try {
     const { userId } = getAuth(request)
@@ -64,24 +64,31 @@ export async function POST(request) {
 
     const name = formData.get("name")
     const price = parseFloat(formData.get("price"))
-    const mrp = parseFloat(formData.get("mrp"))
+    let mrp = parseFloat(formData.get("mrp")) // 👈 changed to let
     const description = formData.get("description")
 
     const rawCategory = formData.get("category")
     const category = normalizeCategory(rawCategory)
 
-    // ✅ FIX: SAFE FILE HANDLING
+    // ✅ SAFE FILE HANDLING
     let files = formData.getAll("images")
-
-    // 🔥 REMOVE EMPTY FILES (IMPORTANT FIX)
     files = files.filter(file => file && file.size > 0)
 
     if (!name || !description || !category) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    if (isNaN(price) || isNaN(mrp)) {
-      return NextResponse.json({ error: "Invalid price or MRP" }, { status: 400 })
+    if (isNaN(price)) {
+      return NextResponse.json({ error: "Invalid price" }, { status: 400 })
+    }
+
+    // ✅ FIX: SAFE MRP HANDLING (IMPORTANT)
+    if (isNaN(mrp) || mrp <= 0) {
+      mrp = price // fallback (no discount case)
+    }
+
+    if (mrp < price) {
+      mrp = price // prevent negative discount
     }
 
     if (!files || files.length === 0) {
@@ -122,7 +129,7 @@ export async function POST(request) {
       data: {
         name,
         price,
-        mrp,
+        mrp, // ✅ now always safe
         description,
         category,
         images: imageUrls,
@@ -180,7 +187,7 @@ export async function DELETE(request) {
 }
 
 
-// ✅ UPDATE PRODUCT (UNCHANGED LOGIC, SAFE)
+// ✅ UPDATE PRODUCT (SAFE MRP FIX ADDED)
 export async function PUT(request) {
   try {
     const { userId } = getAuth(request)
@@ -195,7 +202,7 @@ export async function PUT(request) {
     const id = formData.get("id")
     const name = formData.get("name")
     const price = parseFloat(formData.get("price"))
-    const mrp = parseFloat(formData.get("mrp"))
+    let mrp = parseFloat(formData.get("mrp")) // 👈 changed
     const description = formData.get("description")
 
     const rawCategory = formData.get("category")
@@ -214,6 +221,15 @@ export async function PUT(request) {
 
     if (!existing) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 })
+    }
+
+    // ✅ SAFE MRP LOGIC
+    if (isNaN(mrp) || mrp <= 0) {
+      mrp = price
+    }
+
+    if (mrp < price) {
+      mrp = price
     }
 
     let updatedImages = existing.images
@@ -256,7 +272,7 @@ export async function PUT(request) {
       data: {
         name,
         price,
-        mrp,
+        mrp, // ✅ safe
         description,
         category,
         images: updatedImages

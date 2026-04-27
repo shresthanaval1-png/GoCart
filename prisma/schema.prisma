@@ -38,22 +38,28 @@ model User {
 }
 
 //////////////////////////////////////////////////////
-// PRODUCT (✅ STEP 3 FIXED)
+// PRODUCT (✅ FINAL SAFE VERSION)
 //////////////////////////////////////////////////////
 
 model Product {
   id          String   @id @default(cuid())
   name        String
   description String
-  mrp         Float
+
+  // 💰 PRICING (SAFE + IMPROVED)
+  mrp         Float    @default(0)   // prevents null issues
   price       Float
+
   images      String[]
 
-  // ✅ FIXED (NO ERROR)
+  // CATEGORY
   category    String
   categories  String[] @default([])
 
+  // STATUS
   inStock     Boolean  @default(true)
+
+  // RELATIONS
   storeId     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -62,7 +68,9 @@ model Product {
   orderItems OrderItem[]
   rating     Rating[]
 
-  @@index([category]) // ✅ CORRECT INDEX
+  // 🚀 PERFORMANCE INDEXES
+  @@index([category])
+  @@index([price])
 }
 
 //////////////////////////////////////////////////////

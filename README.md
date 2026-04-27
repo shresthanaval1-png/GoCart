@@ -107,9 +107,3 @@ You can deploy this project using:
 ## 📄 License
 
 This project is for educational purposes.
-
----
-
-## 🙌 Acknowledgements
-
-Special thanks to all team members of **Tech Titans** for their contribution to this project.
