@@ -1,18 +1,4 @@
-# 🛒 GoCart - Full Stack E-commerce Application
-
-## 👥 Group: Tech Titans
-
-### 👨‍💻 Team Members
-
-* Pranjal Gupta
-* Prashidha Kumar Baniya
-* Nawal Shrestha
-* Joy Clarence Md Nurenajar
-
----
-
 ## 📌 Project Overview
-
 GoCart is a full-stack e-commerce web application built using modern technologies. It allows users to browse products, filter by categories, add items to cart, and place orders. Sellers can manage their store, add products, and track inventory.
 
 ---
@@ -94,16 +80,8 @@ You can deploy this project using:
 * Vercel (recommended)
 * Netlify
 
----
-
 ## 📌 Notes
 
 * Ensure database is connected properly
 * Run Prisma migrations before starting
 * Add default images in `/public`
-
----
-
-## 📄 License
-
-This project is for educational purposes.
